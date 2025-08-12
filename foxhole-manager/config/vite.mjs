@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 export default defineConfig(({ mode }) => ({
 
 	plugins: [react(), DiscordProxy.Vite()],
-	base: mode === 'production' ? 'https://lolrobbe2.github.io/foxhole-logi-manager/' : '/',
+	base: mode === 'production' ? '/foxhole-logi-manager/' : '/',
 	server: {
 		allowedHosts: true
 	}
