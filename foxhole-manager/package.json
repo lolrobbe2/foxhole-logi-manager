@@ -26,7 +26,7 @@
 	"scripts": {
 		"build": "robo build",
 		"deploy": "robo deploy",
-		"dev": "robox dev --tunnel",
+		"dev": "robox dev",
 		"doctor": "sage doctor",
 		"invite": "robo invite",
 		"lint:style": "prettier --write .",

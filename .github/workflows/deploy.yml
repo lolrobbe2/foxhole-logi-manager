@@ -33,10 +33,18 @@ jobs:
         env:
           BASE_URL: /${{ github.event.repository.name }}/
 
+      - name: Prepare Robo.js deploy folder
+        run: |
+          rm -rf deploy
+          mkdir deploy
+          cp -r foxhole-manager/.robo/public/* deploy/
+          cp -r foxhole-manager/.robo/build/* deploy/
+        working-directory: .
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: foxhole-manager/.robo/build
+          path: deploy
 
   deploy:
     needs: build
