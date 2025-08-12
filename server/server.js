@@ -1,11 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-dotenv.config({ path: "../.env" });
-
+dotenv.config({ path: "./.env" });
+import FoxholeApi from './foxholeapi.js';
+import Stockpile from "./stockpile.js";
+import StockpileManager from "./stockpilemanager.js";
 const app = express();
 const port = 3001;
-
+const stockpileManager = new StockpileManager();
 // Allow express to parse JSON bodies
 app.use(express.json());
 
@@ -35,3 +37,20 @@ app.post("/api/token", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+app.post('/stockpiles', async (req, res) => {
+  try {
+    const { region, subregion, name, code } = req.body;
+    if (!region || !subregion || !name || !code) {
+      return res.status(400).json({ error: 'region, subregion, name, and code are required' });
+    }
+    await stockpileManager.createStockPile(region,subregion,name);
+  } catch (error) {
+    console.error('Error creating stockpile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+const stockpile = await stockpileManager.getStockpile('deadlands', 'default', 'stockpile');
+await stockpile.addItem("test",5);
+await stockpile.save();
