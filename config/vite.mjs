@@ -1,17 +1,10 @@
 import { DiscordProxy } from '@robojs/patch'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
-import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-	assetsInclude: ['**/*.node'],
-	plugins: [topLevelAwait({
-		// The export name of top-level await promise for each chunk module
-		promiseExportName: "__tla",
-		// The function to generate import names of top-level await promise in each chunk module
-		promiseImportName: i => `__tla_${i}`
-	}), react(), DiscordProxy.Vite()],
+	plugins: [react(), DiscordProxy.Vite()],
 	server: {
 		host: '0.0.0.0',
 		allowedHosts: true,
@@ -20,13 +13,4 @@ export default defineConfig(({ mode }) => ({
 		},
 		historyApiFallback: true,
 	},
-	optimizeDeps: {
-		include: [],
-		exclude: ['@swc/core-win32-x64-msvc']
-	},
-	build: {
-    rollupOptions: {
-      external: ['zlib-sync','fsevents']
-    }
-  }
 }))
