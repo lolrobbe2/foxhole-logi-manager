@@ -1,6 +1,7 @@
 import { DiscordContextProvider } from '../hooks/useDiscordSdk'
 import { Activity } from './Activity'
 import './App.css'
+import { BrowserRouter } from 'react-router-dom'
 
 /**
  * Set `authenticate` to true to enable Discord authentication.
@@ -16,9 +17,11 @@ import './App.css'
  * https://robojs.dev/discord-activities/authentication
  */
 export default function App() {
-	return (
-		<DiscordContextProvider>
-			<Activity />
-		</DiscordContextProvider>
-	)
+  return (
+    <DiscordContextProvider>
+      <BrowserRouter basename='/foxhole-logi-manager/'>
+        <Activity />
+      </BrowserRouter>
+    </DiscordContextProvider>
+  )
 }
