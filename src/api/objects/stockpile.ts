@@ -1,10 +1,12 @@
+import DiscordService from '../discord'
+
 export class StockpileManager {
   private static readonly STORE_KEY = 'stockpiles'
 
   // Stub: you should provide this externally or implement your real Discord connection check
   private static isConnected(): boolean {
     // e.g. return yourDiscordSdk.isConnected
-    return true // placeholder
+    return DiscordService.isConnected() // placeholder
   }
 
   private static async getFlashcore(): Promise<typeof import('robo.js').Flashcore | null> {
