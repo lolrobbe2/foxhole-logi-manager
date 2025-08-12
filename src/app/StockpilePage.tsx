@@ -11,7 +11,7 @@ import {
   Box,
   Typography
 } from '@mui/material';
-import { StockpileManager } from '../api/objects/stockpile';
+import { StockpileManager } from '../app/objects/Stockpile';
 
 const regionDrawerWidth = 200;
 
@@ -26,10 +26,10 @@ export const StockpilesPage = () => {
   useEffect(() => {
     async function loadRegions() {
       setLoadingRegions(true);
-      const allRegions = await StockpileManager.getAllRegions();
+      const allRegions: string[] = await StockpileManager.getAllRegions();
       setRegions(allRegions);
       setLoadingRegions(false);
-      if (allRegions.length > 0) {
+      if (allRegions !== null &&  allRegions.length > 0) {
         setSelectedRegion(allRegions[0]);
       }
     }

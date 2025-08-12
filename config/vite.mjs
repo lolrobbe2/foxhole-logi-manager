@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => ({
 		include: [],
 		exclude: ['@swc/core-win32-x64-msvc']
 	},
-	  build: {
+	build: {
     rollupOptions: {
-      external: ['zlib-sync','fsevents','robo.js']
+      external: ['zlib-sync','fsevents']
     }
   }
 }))

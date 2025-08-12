@@ -1,4 +1,4 @@
-import DiscordService from '../discord'
+import DiscordService from '../../app/discord'
   // Stub: you should provide this externally or implement your real Discord connection check
 
 import { Flashcore } from 'robo.js'

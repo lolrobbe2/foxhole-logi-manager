@@ -1,7 +1,7 @@
 import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
 import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
-import DiscordService from '../api/discord'
+import DiscordService from '../app/discord'
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
 type DiscordSession = UnwrapPromise<ReturnType<typeof discordSdk.commands.authenticate>>
