@@ -19,8 +19,6 @@ import Avatar from '@mui/material/Avatar'
 
 const drawerWidth = 240
 
-const Orders = () => <Typography>Showing Orders content here...</Typography>
-
 const Sidebar = () => {
   const location = useLocation()
 
@@ -121,7 +119,6 @@ export const Activity = () => {
 
           <Routes>
             <Route path="/stockpiles" element={<StockpilesPage />} />
-            <Route path="/orders" element={<Orders />} />
             <Route path="*" element={<StockpilesPage />} />
           </Routes>
         </Box>

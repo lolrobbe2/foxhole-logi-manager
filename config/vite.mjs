@@ -13,7 +13,11 @@ export default defineConfig(({ mode }) => ({
     }),react(), DiscordProxy.Vite()],
 	server: {
 		host: '0.0.0.0',
-		allowedHosts: true
+		allowedHosts: true,
+		fs: {
+			strict: false,
+		},
+		historyApiFallback: true,
 	},
 	optimizeDeps: {
   include: [],
