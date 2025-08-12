@@ -4,6 +4,7 @@ import { DiscordSDK } from "@discord/embedded-app-sdk";
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 setupDiscordSdk().then(() => {
   console.log("Discord SDK is ready");
+  createApp(App).mount('#app')
 });
 let auth;
 
@@ -46,4 +47,3 @@ async function setupDiscordSdk() {
   }
 }
 
-createApp(App).mount('#app')
