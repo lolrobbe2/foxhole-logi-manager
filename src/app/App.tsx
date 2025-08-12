@@ -18,7 +18,7 @@ import { BrowserRouter } from 'react-router-dom'
  */
 export default function App() {
   return (
-    <DiscordContextProvider>
+    <DiscordContextProvider authenticate scope={['identify', 'guilds', 'applications.commands']}>
       <BrowserRouter>
         <Activity />
       </BrowserRouter>
