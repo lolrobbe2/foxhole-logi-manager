@@ -8,11 +8,11 @@ class DiscordService {
 
   // Check if Discord is connected/authenticated
   public static isConnected(): boolean {
-    if (!DiscordService.discordSdk) {
+    if (DiscordService.discordSdk == null) {
       return false;
     }
     // Adjust these checks depending on your SDK properties
-    return DiscordService.discordSdk.authenticated === true;
+    return true;
   }
 
   // Optional: get SDK instance

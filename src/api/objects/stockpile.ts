@@ -18,6 +18,8 @@ export class StockpileManager {
 
   private static isConnected(): boolean {
     // e.g. return yourDiscordSdk.isConnected
+    console.log(`[Discord] Connection status checked: ${DiscordService.isConnected() ? 'Connected' : 'Disconnected'}`);
+
     return DiscordService.isConnected() // placeholder
   }// src/lib/StockpileManager.ts
 
