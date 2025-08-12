@@ -48,7 +48,7 @@ export class StockpileManager {
     const response = await fetch('api/stockpiles/get', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ region })
+      body: JSON.stringify(region)
     })
     if (!response.ok) {
       throw new Error(`Failed to fetch stockpiles for region ${region}: ${response.statusText}`)
