@@ -19,7 +19,7 @@ import { BrowserRouter } from 'react-router-dom'
 export default function App() {
   return (
     <DiscordContextProvider>
-      <BrowserRouter basename='/foxhole-logi-manager/'>
+      <BrowserRouter>
         <Activity />
       </BrowserRouter>
     </DiscordContextProvider>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDiscordSdk } from '../hooks/useDiscordSdk'
+import { resolvePath } from '../api/path'
 
 /**
  * This is your Discord Activity's main component. Customize it as you like!
@@ -29,7 +30,7 @@ export const Activity = () => {
 
 	return (
 		<div>
-			<img src="/rocket.png" className="logo" alt="Discord" />
+			<img src={resolvePath('/rocket.png')} className="logo" alt="Discord" />
 			<h1>Hello, World</h1>
 			{channelName ? <h3>#{channelName}</h3> : <h3>{status}</h3>}
 			<small>
