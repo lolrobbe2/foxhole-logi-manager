@@ -1,6 +1,7 @@
 import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
 import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
+import DiscordService from '~/api/discord'
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
 type DiscordSession = UnwrapPromise<ReturnType<typeof discordSdk.commands.authenticate>>
@@ -117,7 +118,7 @@ export function DiscordContextProvider(props: DiscordContextProviderProps) {
 	if (loadingScreen && !['error', 'ready'].includes(setupResult.status)) {
 		return <>{loadingScreen}</>
 	}
-
+	DiscordService.setSdk(discordSdk);
 	return <DiscordContext.Provider value={setupResult}>{children}</DiscordContext.Provider>
 }
 

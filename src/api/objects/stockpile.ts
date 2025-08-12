@@ -4,7 +4,7 @@ export class StockpileManager {
   // Stub: you should provide this externally or implement your real Discord connection check
   private static isConnected(): boolean {
     // e.g. return yourDiscordSdk.isConnected
-    return false // placeholder
+    return true // placeholder
   }
 
   private static async getFlashcore(): Promise<typeof import('robo.js').Flashcore | null> {
