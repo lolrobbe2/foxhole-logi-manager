@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import fs from 'fs'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/foxhole-logi-manager/' : '/',
+  base: mode === 'production' ? 'https://lolrobbe2.github.io/foxhole-logi-manager/' : '/',
   plugins: [
     vue(),
     vueDevTools(),
