@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => ({
 
 	plugins: [react(), DiscordProxy.Vite()],
 	server: {
+		host: '0.0.0.0',
 		allowedHosts: true
 	}
 }))
