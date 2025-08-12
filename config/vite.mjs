@@ -21,6 +21,6 @@ export default defineConfig(({ mode }) => ({
 	},
 	optimizeDeps: {
 		include: [],
-		exclude: ['fsevents', '@swc/core-win32-x64-msvc']
+		exclude: ['@swc/core-win32-x64-msvc']
 	}
 }))

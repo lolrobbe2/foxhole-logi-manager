@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useDiscordSdk } from '../hooks/useDiscordSdk'
-import { MemoryRouter, useRoutes, RouteObject, useNavigate, useLocation, Link } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -12,37 +11,21 @@ import Typography from '@mui/material/Typography'
 import Toolbar from '@mui/material/Toolbar'
 import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
-
 import { StockpilesPage } from './StockpilePage'
+import UserPage from './UserPage'
 
-// Drawer width as relative unit for responsiveness
 const drawerWidth = '10vw'
 
-// Colors
+// Foxhole military-inspired color palette
 const colors = {
-  background: '#1b1b1b',
-  sidebar: '#2a2a2a',
-  accent: '#a67c52',
-  highlight: '#5d6f5f',
-  textPrimary: '#f5f5f0',
-  textSecondary: 'rgba(245, 245, 240, 0.75)'
+  background: '#1b1b1b', // deep dark steel
+  sidebar: '#2a2a2a', // slightly lighter for sidebar
+  accent: '#7a5c3c', // muted brown/bronze
+  highlight: '#4a5c4d', // olive-gray for hover/selected
+  text: '#e0e0d1' // off-white
 }
 
-const Orders = () => <Typography sx={{ color: colors.textPrimary }}>Showing Orders content here...</Typography>
-
-const routes: RouteObject[] = [
-  { path: '/stockpiles', element: <StockpilesPage /> },
-  { path: '/orders', element: <Orders /> },
-  { path: '*', element: <StockpilesPage /> }
-]
-
-interface SidebarProps {
-  currentPath: string
-}
-
-const Sidebar = (props: SidebarProps) => {
-  const locationPath = props.currentPath
-
+const Sidebar = ({ activeId }: { activeId: string }) => {
   return (
     <Drawer
       variant="permanent"
@@ -53,83 +36,64 @@ const Sidebar = (props: SidebarProps) => {
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundColor: colors.sidebar,
-          color: colors.textPrimary,
-          borderRight: `1px solid ${colors.highlight}`
+          color: colors.text
         }
       }}
     >
       <Toolbar>
-        <Typography
-          variant="h6"
-          noWrap
-          sx={{
-            fontWeight: 'bold',
-            color: colors.accent,
-            textshadow: '1px 1px 2px rgba(0,0,0,0.7)',  // fixed typo
-            userSelect: 'none'
-          }}
-        >
+        <Typography variant="h6" noWrap sx={{ color: colors.accent }}>
           Menu
         </Typography>
       </Toolbar>
       <Divider sx={{ backgroundColor: colors.accent }} />
       <List>
-        {routes
-          .filter((route) => route.path !== '*')
-          .map((route) => {
-            const path = route.path ?? ''
-            const label = path.replace('/', '').charAt(0).toUpperCase() + path.slice(2)
-            const selected = locationPath === path
+        <ListItem disablePadding>
+          <ListItemButton
+            component="a"
+            href="#stockpiles"
+            selected={activeId === 'stockpiles'}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: colors.highlight
+              },
+              '&:hover': {
+                backgroundColor: colors.highlight
+              }
+            }}
+          >
+            <ListItemText primary="Stockpiles" />
+          </ListItemButton>
+        </ListItem>
 
-            return (
-              <ListItem key={path} disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to={path}
-                  selected={selected}
-                  sx={{
-                    color: colors.textPrimary,
-                    fontWeight: 'bold',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.6)',  // fixed typo
-                    '&.Mui-selected': {
-                      backgroundColor: colors.highlight
-                    },
-                    '&:hover': {
-                      backgroundColor: colors.highlight
-                    }
-                  }}
-                >
-                  <ListItemText
-                    primary={label.charAt(0).toUpperCase() + label.slice(1)}
-                    slotProps={{
-                      primary: {
-                        fontWeight: 'bold',
-                        color: colors.textPrimary,
-                        textshadow: '1px 1px 2px rgba(0,0,0,0.8)'
-                      }
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            )
-          })}
+        <ListItem disablePadding>
+          <ListItemButton
+            component="a"
+            href="#orders"
+            selected={activeId === 'orders'}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: colors.highlight
+              },
+              '&:hover': {
+                backgroundColor: colors.highlight
+              }
+            }}
+          >
+            <ListItemText primary="Orders" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Drawer>
   )
 }
 
-
-const ActivityRoutes = () => {
-  const element = useRoutes(routes)
-  return element
-}
-
-const ActivityContent = () => {
+export const Activity = () => {
   const { authenticated, discordSdk } = useDiscordSdk()
   const [channelName, setChannelName] = useState<string>()
-
-  const navigate = useNavigate()
-  const location = useLocation()
+  const [activeId, setActiveId] = useState<string>(() => {
+    // initialize from current hash or default to "stockpiles"
+    return window.location.hash ? window.location.hash.slice(1) : 'stockpiles'
+  })
 
   useEffect(() => {
     if (!authenticated || !discordSdk.channelId || !discordSdk.guildId) {
@@ -143,19 +107,26 @@ const ActivityContent = () => {
     })
   }, [authenticated, discordSdk])
 
-  // Redirect '/' to '/stockpiles' on mount or when location is '/'
   useEffect(() => {
-    if (location.pathname === '/') {
-      navigate('/stockpiles', { replace: true })
+    // Listen for hash changes and update activeId state
+    const onHashChange = () => {
+      const hash = window.location.hash.slice(1)
+      setActiveId(hash || 'stockpiles') // fallback to stockpiles
     }
-  }, [location.pathname, navigate])
+
+    window.addEventListener('hashchange', onHashChange)
+
+    return () => {
+      window.removeEventListener('hashchange', onHashChange)
+    }
+  }, [])
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
       <CssBaseline />
 
       {/* Sidebar */}
-      <Sidebar currentPath={location.pathname} />
+      <Sidebar activeId={activeId} />
 
       {/* Main Content */}
       <Box
@@ -164,24 +135,11 @@ const ActivityContent = () => {
           flexGrow: 1,
           bgcolor: colors.background,
           p: 3,
-          mt: 8,
-          color: colors.textPrimary,
-          overflowY: 'auto'
+          mt: 8
         }}
       >
-        <ActivityRoutes />
+        <UserPage id={activeId} />
       </Box>
     </Box>
-  )
-}
-
-// Main export, wraps in MemoryRouter with initialEntries
-export const Activity = (props: { location?: string }) => {
-  const initialPath = props.location ?? '/'
-
-  return (
-    <MemoryRouter initialEntries={[initialPath]}>
-      <ActivityContent />
-    </MemoryRouter>
   )
 }
