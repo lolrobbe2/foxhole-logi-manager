@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
-import { useDiscordSdk } from '../hooks/useDiscordSdk'
-import { resolvePath } from '../api/path'
-import { StockpilesPage } from './pages/StockpilesPage'
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Link,
+  Outlet,
+  useLocation
+} from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -16,6 +19,10 @@ import AppBar from '@mui/material/AppBar'
 import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
 import Avatar from '@mui/material/Avatar'
+
+import { useDiscordSdk } from '../hooks/useDiscordSdk'
+import { resolvePath } from '../api/path'
+import { StockpilesPage } from './pages/StockpilesPage'
 
 const drawerWidth = 240
 
@@ -58,7 +65,7 @@ const Sidebar = () => {
   )
 }
 
-export const Activity = () => {
+const RootLayout = () => {
   const { authenticated, discordSdk, status } = useDiscordSdk()
   const [channelName, setChannelName] = useState<string>()
 
@@ -75,54 +82,63 @@ export const Activity = () => {
   }, [authenticated, discordSdk])
 
   return (
-    <BrowserRouter>
-      <Box sx={{ display: 'flex', height: '100vh' }}>
-        <CssBaseline />
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      <CssBaseline />
 
-        {/* AppBar with only Discord avatar */}
-        <AppBar
-          position="fixed"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'background.paper' }}
-          elevation={1}
-        >
-          <Toolbar>
-            <Avatar src={resolvePath('/rocket.png')} alt="Discord" />
-          </Toolbar>
-        </AppBar>
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'background.paper' }}
+        elevation={1}
+      >
+        <Toolbar>
+          <Avatar src={resolvePath('/rocket.png')} alt="Discord" />
+        </Toolbar>
+      </AppBar>
 
-        {/* Sidebar */}
-        <Sidebar />
+      <Sidebar />
 
-        {/* Main Content */}
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            bgcolor: 'background.default',
-            p: 3,
-            mt: 8 // space below AppBar
-          }}
-        >
-          {channelName ? (
-            <Typography variant="h5" gutterBottom>
-              #{channelName}
-            </Typography>
-          ) : (
-            <Typography variant="h6" gutterBottom>
-              {status}
-            </Typography>
-          )}
-
-          <Typography variant="body2" color="text.secondary" mb={3}>
-            Powered by <strong>Robo.js</strong>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          bgcolor: 'background.default',
+          p: 3,
+          mt: 8 // space below AppBar
+        }}
+      >
+        {channelName ? (
+          <Typography variant="h5" gutterBottom>
+            #{channelName}
           </Typography>
+        ) : (
+          <Typography variant="h6" gutterBottom>
+            {status}
+          </Typography>
+        )}
 
-          <Routes>
-            <Route path="/stockpiles" element={<StockpilesPage />} />
-            <Route path="*" element={<StockpilesPage />} />
-          </Routes>
-        </Box>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Powered by <strong>Robo.js</strong>
+        </Typography>
+
+        {/* Render matching route element here */}
+        <Outlet />
       </Box>
-    </BrowserRouter>
+    </Box>
   )
+}
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <StockpilesPage /> },
+      { path: 'stockpiles', element: <StockpilesPage /> },
+      { path: '*', element: <StockpilesPage /> }
+    ]
+  }
+])
+
+export const Activity = () => {
+  return <RouterProvider router={router} />
 }
