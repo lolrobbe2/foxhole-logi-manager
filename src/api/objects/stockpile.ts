@@ -24,7 +24,7 @@ export class StockpileManager {
   }// src/lib/StockpileManager.ts
 
   private static async parseStored(value: unknown): Promise<Stockpile[]> {
-    if (!value || !this.isConnected()) return []
+    if (!value) return []
     // Flashcore can return objects or strings depending on usage / versions.
     if (typeof value === 'string') {
       try {
@@ -42,25 +42,16 @@ export class StockpileManager {
   }
 
   public static async getStockpiles(): Promise<Stockpile[]> {
-    if(!this.isConnected()) {
-        return [];
-    }
     const stored = await Flashcore.get(StockpileManager.STORE_KEY)
     return await StockpileManager.parseStored(stored)
   }
 
   public static async saveStockpiles(stockpiles: Stockpile[]): Promise<void> {
     // store as JSON string to be consistent
-    if(!this.isConnected()) {
-        return;
-    }
     await Flashcore.set(StockpileManager.STORE_KEY, JSON.stringify(stockpiles))
   }
 
   public static async addOrUpdateStockpile(newStockpile: Stockpile): Promise<void> {
-     if(!this.isConnected()) {
-        return;
-    }
     const stockpiles = await this.getStockpiles()
     const index = stockpiles.findIndex((s) => s.name === newStockpile.name)
 
