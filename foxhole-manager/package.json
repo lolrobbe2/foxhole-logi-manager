@@ -54,5 +54,6 @@
 		"prettier": "^3.6.2",
 		"typescript": "^5.9.2",
 		"vite": "^5.4.19"
-	}
+	},
+	"homepage": "https://lolrobbe2.github.io/foxhole-logi-manager/"
 }

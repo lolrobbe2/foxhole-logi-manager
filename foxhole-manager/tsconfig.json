@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"lib": ["esnext", "DOM", "DOM.Iterable"],
-		"baseUrl": "https://lolrobbe2.github.io/foxhole-logi-manager/",
+		"baseUrl": ".",
 		"paths": {
 			"~/*": ["src/*"]
 		},
