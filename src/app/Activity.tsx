@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDiscordSdk } from '../hooks/useDiscordSdk'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
@@ -12,7 +13,6 @@ import Toolbar from '@mui/material/Toolbar'
 import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
 import { StockpilesPage } from './StockpilePage'
-import UserPage from './UserPage'
 
 const drawerWidth = '10vw'
 
@@ -25,7 +25,15 @@ const colors = {
   text: '#e0e0d1' // off-white
 }
 
-const Sidebar = ({ activeId }: { activeId: string }) => {
+const Orders = () => (
+  <Typography variant="body1" sx={{ color: colors.text }}>
+    Showing Orders content here...
+  </Typography>
+)
+
+const Sidebar = () => {
+  const location = useLocation()
+
   return (
     <Drawer
       variant="permanent"
@@ -49,9 +57,9 @@ const Sidebar = ({ activeId }: { activeId: string }) => {
       <List>
         <ListItem disablePadding>
           <ListItemButton
-            component="a"
-            href="#stockpiles"
-            selected={activeId === 'stockpiles'}
+            component={Link}
+            to="/stockpiles"
+            selected={location.pathname === '/stockpiles'}
             sx={{
               '&.Mui-selected': {
                 backgroundColor: colors.highlight
@@ -67,9 +75,9 @@ const Sidebar = ({ activeId }: { activeId: string }) => {
 
         <ListItem disablePadding>
           <ListItemButton
-            component="a"
-            href="#orders"
-            selected={activeId === 'orders'}
+            component={Link}
+            to="/orders"
+            selected={location.pathname === '/orders'}
             sx={{
               '&.Mui-selected': {
                 backgroundColor: colors.highlight
@@ -90,10 +98,6 @@ const Sidebar = ({ activeId }: { activeId: string }) => {
 export const Activity = () => {
   const { authenticated, discordSdk } = useDiscordSdk()
   const [channelName, setChannelName] = useState<string>()
-  const [activeId, setActiveId] = useState<string>(() => {
-    // initialize from current hash or default to "stockpiles"
-    return window.location.hash ? window.location.hash.slice(1) : 'stockpiles'
-  })
 
   useEffect(() => {
     if (!authenticated || !discordSdk.channelId || !discordSdk.guildId) {
@@ -107,39 +111,31 @@ export const Activity = () => {
     })
   }, [authenticated, discordSdk])
 
-  useEffect(() => {
-    // Listen for hash changes and update activeId state
-    const onHashChange = () => {
-      const hash = window.location.hash.slice(1)
-      setActiveId(hash || 'stockpiles') // fallback to stockpiles
-    }
-
-    window.addEventListener('hashchange', onHashChange)
-
-    return () => {
-      window.removeEventListener('hashchange', onHashChange)
-    }
-  }, [])
-
   return (
-    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
-      <CssBaseline />
+    <BrowserRouter>
+      <Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
+        <CssBaseline />
 
-      {/* Sidebar */}
-      <Sidebar activeId={activeId} />
+        {/* Sidebar */}
+        <Sidebar />
 
-      {/* Main Content */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          bgcolor: colors.background,
-          p: 3,
-          mt: 8
-        }}
-      >
-        <UserPage id={activeId} />
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            bgcolor: colors.background,
+            p: 3,
+            mt: 8
+          }}
+        >
+          <Routes>
+            <Route path="/stockpiles" element={<StockpilesPage />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="*" element={<StockpilesPage />} />
+          </Routes>
+        </Box>
       </Box>
-    </Box>
+    </BrowserRouter>
   )
 }

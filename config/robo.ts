@@ -4,6 +4,9 @@ export default <Config>{
 	clientOptions: {
 		intents: ['Guilds', 'GuildMessages']
 	},
+	experimental: {
+		disableBot: false
+	},
 	plugins: [],
 	type: 'robo',
 	watcher: {

@@ -5,6 +5,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+	assetsInclude: ['**/*.node'],
 	plugins: [topLevelAwait({
 		// The export name of top-level await promise for each chunk module
 		promiseExportName: "__tla",
@@ -22,5 +23,10 @@ export default defineConfig(({ mode }) => ({
 	optimizeDeps: {
 		include: [],
 		exclude: ['@swc/core-win32-x64-msvc']
-	}
+	},
+	  build: {
+    rollupOptions: {
+      external: ['zlib-sync','fsevents','robo.js']
+    }
+  }
 }))
