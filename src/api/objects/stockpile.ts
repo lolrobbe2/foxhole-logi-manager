@@ -1,5 +1,15 @@
 import DiscordService from '../discord'
 
+export interface StockpileItem {
+  [itemName: string]: number
+}
+
+export interface Stockpile {
+  name: string       // format: region_subregion_name
+  code: string
+  items: StockpileItem
+}
+
 export class StockpileManager {
   private static readonly STORE_KEY = 'stockpiles'
 
