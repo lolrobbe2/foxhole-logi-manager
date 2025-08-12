@@ -65,7 +65,7 @@ const Sidebar = (props: SidebarProps) => {
           sx={{
             fontWeight: 'bold',
             color: colors.accent,
-            textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
+            textshadow: '1px 1px 2px rgba(0,0,0,0.7)',  // fixed typo
             userSelect: 'none'
           }}
         >
@@ -90,7 +90,7 @@ const Sidebar = (props: SidebarProps) => {
                   sx={{
                     color: colors.textPrimary,
                     fontWeight: 'bold',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.6)',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.6)',  // fixed typo
                     '&.Mui-selected': {
                       backgroundColor: colors.highlight
                     },
@@ -101,10 +101,12 @@ const Sidebar = (props: SidebarProps) => {
                 >
                   <ListItemText
                     primary={label.charAt(0).toUpperCase() + label.slice(1)}
-                    primaryTypographyProps={{
-                      fontWeight: 'bold',
-                      color: colors.textPrimary,
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
+                    slotProps={{
+                      primary: {
+                        fontWeight: 'bold',
+                        color: colors.textPrimary,
+                        textshadow: '1px 1px 2px rgba(0,0,0,0.8)'
+                      }
                     }}
                   />
                 </ListItemButton>
@@ -115,6 +117,7 @@ const Sidebar = (props: SidebarProps) => {
     </Drawer>
   )
 }
+
 
 const ActivityRoutes = () => {
   const element = useRoutes(routes)
