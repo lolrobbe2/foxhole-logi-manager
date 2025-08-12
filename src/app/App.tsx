@@ -1,7 +1,6 @@
 import { DiscordContextProvider } from '../hooks/useDiscordSdk'
 import { Activity } from './Activity'
 import './App.css'
-import { BrowserRouter } from 'react-router-dom'
 
 /**
  * Set `authenticate` to true to enable Discord authentication.
@@ -19,9 +18,7 @@ import { BrowserRouter } from 'react-router-dom'
 export default function App() {
   return (
     <DiscordContextProvider authenticate scope={['identify', 'guilds', 'applications.commands']}>
-      <BrowserRouter>
         <Activity />
-      </BrowserRouter>
     </DiscordContextProvider>
   )
 }

@@ -33,9 +33,9 @@ export default async (interaction: ChatInputCommandInteraction) => {
     const region = interaction.options.getString('region', false)
     if (region !== null) {
        const stockpiles = await StockpileManager.getStockpilesByRegion(region);
-         const list = stockpiles
-    .map(s => `${s.name} (code: ${s.code})`)
-    .join('\n')
+            const list = stockpiles
+        .map(s => `${s.name}`)
+        .join('\n')
 
         const response = `Stockpiles in region **${region}**:\n${list}`.slice(0, 1900)
         interaction.reply(response);
