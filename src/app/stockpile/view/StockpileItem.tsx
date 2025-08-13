@@ -1,5 +1,5 @@
 import { Box, Typography, Tooltip } from '@mui/material';
-import { FC } from 'react';
+import { FC, MouseEventHandler } from 'react';
 
 interface ItemProps {
     name: string;
@@ -7,9 +7,10 @@ interface ItemProps {
     image: string; // file name
     count?: number | null;
     faction: 'none' | 'warden' | 'colonial';
+    onClick?: MouseEventHandler<HTMLDivElement>; // new optional click handler
 }
 
-export const Item: FC<ItemProps> = ({ name, category, image, count, faction }) => {
+export const Item: FC<ItemProps> = ({ name, category, image, count, faction, onClick }) => {
     const imageSrc = `/stockpile/${category}/${image}`;
     const isAvailable = count != null && count > 0;
 
@@ -30,6 +31,7 @@ export const Item: FC<ItemProps> = ({ name, category, image, count, faction }) =
     return (
         <Tooltip title={name} arrow>
             <Box
+                onClick={onClick} // clickable now
                 sx={{
                     width: '5rem',
                     height: '5rem',
@@ -41,6 +43,11 @@ export const Item: FC<ItemProps> = ({ name, category, image, count, faction }) =
                     border: `1px solid ${borderColor}`,
                     borderRadius: '0.25rem',
                     cursor: 'pointer',
+                    '&:hover': {
+                        boxShadow: '0 0 10px rgba(255,255,255,0.3)',
+                        transform: 'scale(1.05)',
+                        transition: 'all 0.2s ease-in-out'
+                    }
                 }}
             >
                 <img

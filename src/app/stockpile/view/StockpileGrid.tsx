@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Item } from './StockpileItem';
 import { StockpileItem } from '../../../app/objects/Stockpile';
-import { CategoryItem } from './CategoriesSelector';
+import { CategoryItem } from '../../../app/objects/categoryItems';
 
 interface CategoryItemsGridProps {
     category: string;
@@ -14,6 +14,8 @@ interface CategoryItemsGridProps {
     imageBasePath?: string;
     /** optional heading above the grid */
     title?: string;
+    /** callback when an item is clicked */
+    onItemClick?: (item: CategoryItem, count: number | null) => void;
 }
 
 /** Normalize an item key for fuzzy matching */
@@ -40,7 +42,8 @@ export const CategoryItemsGrid: FC<CategoryItemsGridProps> = ({
     itemTypes,
     stockpileItems,
     imageBasePath = '/stockpile',
-    title
+    title,
+    onItemClick
 }) => {
     const itemsWithCounts = useMemo(
         () =>
@@ -78,14 +81,15 @@ export const CategoryItemsGrid: FC<CategoryItemsGridProps> = ({
                     alignItems: 'start'
                 }}
             >
-                {itemsWithCounts.map((it) => (
+                {itemsWithCounts.map((it,idx) => (
                     <Item
-                        key={it.item.name}
+                        key={`${idx}-${it.item.name}`}
                         name={it.item.name}
                         category={category}
                         count={it.count ?? null}
                         image={it.item.image}
                         faction={it.item.faction || 'none'}
+                        onClick={() => onItemClick?.(it.item, it.count ?? null)}
                     />
                 ))}
             </Box>

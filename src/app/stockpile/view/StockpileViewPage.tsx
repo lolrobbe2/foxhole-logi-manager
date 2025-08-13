@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { CircularProgress, Typography, Box, Chip } from '@mui/material'
+import { CircularProgress, Typography, Box, Chip, List } from '@mui/material'
 import { Stockpile } from '../../objects/Stockpile'
 import { CategoriesSelector, CategorySelectorItem } from './CategoriesSelector'
-import { CategoryItemsGrid } from './StockpileGrid' // <- new import
-import { categoryItems } from '../../objects/categoryItems'
+import { CategoryItemsGrid } from './StockpileGrid'
+import { CategoryItem, categoryItems } from '../../objects/categoryItems'
+import { ItemTransaction } from './ItemTransaction' // <- import ItemTransaction
 
 const categories: CategorySelectorItem[] = [
 	{ name: 'All', image: '/stockpile/categories/IconFilterAll.webp' },
@@ -30,12 +31,21 @@ const colors = {
 	text: '#e0e0d1'
 }
 
+interface Transaction {
+	itemName: string
+	image: string
+	quantity: number
+	category: string
+	inbound: boolean // true = inbound, false = outbound
+}
+
 export const StockpileViewPage = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const [stockpile, setStockpile] = useState<Stockpile | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [selectedCategory, setSelectedCategory] = useState<string>('All')
+	const [transactions, setTransactions] = useState<Transaction[]>([])
 
 	useEffect(() => {
 		if (!location.state?.stockpile) {
@@ -47,6 +57,37 @@ export const StockpileViewPage = () => {
 		setStockpile(location.state.stockpile as Stockpile)
 		setLoading(false)
 	}, [location.state, navigate])
+
+	const handleItemClick = (item: CategoryItem, count: number | null) => {
+		const transactionItem = {
+			itemName: item.name,
+			image: item.image,
+			category: selectedCategory, // use currently selected category
+			quantity: count ?? 1,
+			inbound: true
+		}
+
+		setTransactions((prev) => {
+			const index = prev.findIndex((t) => t.itemName === transactionItem.itemName)
+			if (index >= 0) {
+				const newTransactions = [...prev]
+				newTransactions[index].quantity += transactionItem.quantity
+				return newTransactions
+			}
+			return [...prev, transactionItem]
+		})
+	}
+
+	const updateTransaction = (index: number, delta: number) => {
+		setTransactions((prev) => {
+			const newTransactions = [...prev]
+			newTransactions[index].quantity += delta
+			if (newTransactions[index].quantity <= 0) {
+				newTransactions.splice(index, 1)
+			}
+			return newTransactions
+		})
+	}
 
 	if (loading) {
 		return (
@@ -75,72 +116,122 @@ export const StockpileViewPage = () => {
 	}
 
 	return (
-		<Box sx={{ bgcolor: colors.background, minHeight: '100vh' }}>
-			{/* Banner */}
-			<Box
-				sx={{
-					ml: '1.5rem',
-					mr: '1.5rem',
-					mb: '2rem',
-					bgcolor: colors.sidebar,
-					borderRadius: '1rem',
-					boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					position: 'relative',
-					textAlign: 'center',
-					minHeight: '4rem'
-				}}
-			>
-				{/* Region & Subregion Chips */}
+		<Box sx={{ bgcolor: colors.background, minHeight: '100vh', display: 'flex' }}>
+			{/* Main Content */}
+			<Box sx={{ flex: 1, pr: '20rem' }}>
+				{/* Banner */}
 				<Box
 					sx={{
-						position: 'absolute',
-						left: '1.5rem',
+						ml: '1.5rem',
+						mr: '1.5rem',
+						mb: '2rem',
+						bgcolor: colors.sidebar,
+						borderRadius: '1rem',
+						boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
 						display: 'flex',
-						gap: '0.5rem',
-						flexWrap: 'wrap'
+						alignItems: 'center',
+						justifyContent: 'center',
+						position: 'relative',
+						textAlign: 'center',
+						minHeight: '4rem'
 					}}
 				>
-					<Chip
-						label={Stockpile.getRegion(stockpile)}
+					{/* Region & Subregion Chips */}
+					<Box
 						sx={{
-							bgcolor: colors.accent,
-							color: colors.text,
-							fontWeight: 'bold'
+							position: 'absolute',
+							left: '1.5rem',
+							display: 'flex',
+							gap: '0.5rem',
+							flexWrap: 'wrap'
 						}}
-					/>
-					<Chip
-						label={Stockpile.getSubregion(stockpile)}
-						sx={{
-							bgcolor: colors.highlight,
-							color: colors.text,
-							fontWeight: 'bold'
-						}}
-					/>
+					>
+						<Chip
+							label={Stockpile.getRegion(stockpile)}
+							sx={{
+								bgcolor: colors.accent,
+								color: colors.text,
+								fontWeight: 'bold'
+							}}
+						/>
+						<Chip
+							label={Stockpile.getSubregion(stockpile)}
+							sx={{
+								bgcolor: colors.highlight,
+								color: colors.text,
+								fontWeight: 'bold'
+							}}
+						/>
+					</Box>
+
+					{/* Title */}
+					<Typography variant="h4" sx={{ color: colors.text }}>
+						{Stockpile.getDisplayName(stockpile)}
+					</Typography>
 				</Box>
 
-				{/* Title */}
-				<Typography variant="h4" sx={{ color: colors.text }}>
-					{Stockpile.getDisplayName(stockpile)}
-				</Typography>
+				{/* Categories */}
+				<CategoriesSelector
+					selectedCategory={selectedCategory}
+					categories={categories}
+					onCategoryClick={(cat) => setSelectedCategory(cat.name)}
+				/>
+
+				{/* Items Grid */}
+				<Box sx={{ mt: '2rem', px: '1.5rem' }}>
+					<CategoryItemsGrid
+						category={selectedCategory}
+						itemTypes={categoryItems[selectedCategory] ?? []}
+						stockpileItems={stockpile.items}
+						onItemClick={handleItemClick} // <- pass click handler
+					/>
+				</Box>
 			</Box>
 
-			{/* Categories */}
-			<CategoriesSelector
-				selectedCategory={selectedCategory}
-				categories={categories}
-				onCategoryClick={(cat) => setSelectedCategory(cat.name)}
-			/>
-
-			{/* Items Grid */}
-			<Box sx={{ mt: '2rem', px: '1.5rem' }}>
-				<CategoryItemsGrid
-					category={selectedCategory}
-					itemTypes={categoryItems[selectedCategory] ?? []} // now full objects
-					stockpileItems={stockpile.items}
-				/>
+			{/* Transaction Drawer */}
+			<Box
+				sx={{
+					width: '20rem',
+					position: 'fixed',
+					right: 0,
+					top: 0,
+					height: '100%',
+					bgcolor: colors.sidebar,
+					p: '1rem',
+					overflowY: 'auto'
+				}}
+			>
+				<Typography variant="h6" sx={{ color: colors.text, mb: '1rem' }}>
+					Item Transactions
+				</Typography>
+				<List>
+					{transactions.map((t, idx) => (
+						<ItemTransaction
+							key={idx}
+							itemName={t.itemName}
+							image={t.image}
+							category={t.category}
+							quantity={t.quantity}
+							inbound={t.inbound}
+							onChange={(delta) => updateTransaction(idx, delta)}
+							onSetQuantity={(newQty) => {
+								setTransactions((prev) => {
+									const newTransactions = [...prev]
+									newTransactions[idx].quantity = newQty
+									if (newQty <= 0) newTransactions.splice(idx, 1)
+									return newTransactions
+								})
+							}}
+							onToggleInbound={() => {
+								setTransactions((prev) => {
+									const newTransactions = [...prev]
+									newTransactions[idx] = { ...newTransactions[idx], inbound: !newTransactions[idx].inbound }
+									return newTransactions
+								})
+							}}
+						/>
+					))}
+				</List>
 			</Box>
 		</Box>
 	)
