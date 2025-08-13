@@ -135,7 +135,6 @@ export class StockpileManager {
 			const regions: string[] = await response.json()
 			return regions
 		} catch (error) {
-			console.error('Error fetching regions:', error)
 			return []
 		}
 	}

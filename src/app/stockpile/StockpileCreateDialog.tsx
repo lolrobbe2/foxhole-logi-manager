@@ -84,7 +84,6 @@ export const CreateStockpileDialog = ({ open, onClose, onCreated }: CreateStockp
 			if (onCreated) onCreated()
 			onClose()
 		} catch (err) {
-			console.error('Failed to create stockpile', err)
 		}
 	}
 

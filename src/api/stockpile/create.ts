@@ -20,7 +20,6 @@ export default async (req: RoboRequest) => {
 
     return RoboResponse.json({ message: 'Stockpile created successfully' });
   } catch (error) {
-    console.error('Failed to create stockpile:', error);
     return RoboResponse.json({ error: 'Internal server error' });
   }
 };

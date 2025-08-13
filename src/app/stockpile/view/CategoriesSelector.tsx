@@ -1,6 +1,6 @@
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
-import { CategoryItem } from '../../../app/objects/categoryItems';
+
 export interface CategorySelectorItem {
     name: string
     image: string // file name, e.g. "44-magnum.webp"
@@ -49,48 +49,49 @@ export const CategoriesSelector: FC<CategoriesSelectorProps> = ({
 			{categories.map((cat, idx) => {
 				const isSelected = cat.name === current;
 				return (
-					<IconButton
-						key={idx}
-						disableRipple
-						disableFocusRipple
-						disableTouchRipple
-						onClick={() => {
-							setCurrent(cat.name);
-							onCategoryClick?.(cat);
-						}}
-						sx={{
-							width: '2.25rem',
-							height: '2.25rem',
-							borderRadius: '0.25rem',
-							p: 0,
-							background: 'transparent',
-							outline: 'none',
-							'&:hover': {
-								background: 'transparent'
-							},
-							'&:focus': {
-								outline: 'none'
-							}
-						}}
-					>
-						<img
-							src={cat.image}
-							alt={cat.name}
-							style={{
-								width: '2rem',
-								height: '2rem',
-								objectFit: 'contain',
-								filter: isSelected
-									? orangeFilter
-									: 'brightness(0) invert(1)',
-								transition: 'filter 0.15s ease'
+					<Tooltip key={idx} title={cat.name} arrow>
+						<IconButton
+							disableRipple
+							disableFocusRipple
+							disableTouchRipple
+							onClick={() => {
+								setCurrent(cat.name);
+								onCategoryClick?.(cat);
 							}}
-						/>
-					</IconButton>
+							sx={{
+								width: '2.25rem',
+								height: '2.25rem',
+								borderRadius: '0.25rem',
+								p: 0,
+								background: 'transparent',
+								outline: 'none',
+								'&:hover': {
+									background: 'transparent'
+								},
+								'&:focus': {
+									outline: 'none'
+								}
+							}}
+						>
+							<img
+								src={cat.image}
+								alt={cat.name}
+								style={{
+									width: '2rem',
+									height: '2rem',
+									objectFit: 'contain',
+									filter: isSelected
+										? orangeFilter
+										: 'brightness(0) invert(1)',
+									transition: 'filter 0.15s ease'
+								}}
+							/>
+						</IconButton>
+					</Tooltip>
 				);
 			})}
 		</Box>
 	);
 };
-export { CategorySelectorItem };
 
+export { CategorySelectorItem };

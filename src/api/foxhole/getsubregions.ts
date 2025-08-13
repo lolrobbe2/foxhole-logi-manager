@@ -20,7 +20,6 @@ export default async (req: RoboRequest) => {
 
         return RoboResponse.json(majorTexts);
     } catch (error) {
-        console.error(error);
         return RoboResponse.json({ error: 'could not load region' });
     }
 };

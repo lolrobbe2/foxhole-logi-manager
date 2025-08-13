@@ -54,7 +54,6 @@ export default class FoxholeApi {
             }
             return (await response.json()) as T;
         } catch (err) {
-            console.error(`Failed to fetch from ${url}:`, err);
             return null;
         }
     }

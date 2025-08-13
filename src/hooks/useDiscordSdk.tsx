@@ -193,7 +193,6 @@ export function useDiscordSdkSetup(options?: UseDiscordSdkSetupOptions) {
 
 			setStatus('ready')
 		} catch (e) {
-			console.error(e)
 			if (e instanceof Error) {
 				setError(e.message)
 			} else {

@@ -7,18 +7,18 @@ import { CategoryItemsGrid } from './StockpileGrid' // <- new import
 import { categoryItems } from '../../objects/categoryItems'
 
 const categories: CategorySelectorItem[] = [
-	{ name: 'All', image: '../../../../public/stockpile/categories/IconFilterAll.webp' },
-	{ name: 'Small Arms', image: '../../../../public/stockpile/categories/IconFilterSmallWeapons.webp' },
-	{ name: 'Heavy Arms', image: '../../../../public/stockpile/categories/IconFilterHeavyWeapons.webp' },
-	{ name: 'Heavy Ammunition', image: '../../../../public/stockpile/categories/IconFilterHeavyAmmunition.webp' },
-	{ name: 'Utility', image: '../../../../public/stockpile/categories/IconFilterUtility.webp' },
-	{ name: 'Medical', image: '../../../../public/stockpile/categories/IconFilterMedical.webp' },
-	{ name: 'Resource', image: '../../../../public/stockpile/categories/IconFilterResource.webp' },
-	{ name: 'Uniforms', image: '../../../../public/stockpile/categories/IconFilterUniforms.webp' },
-	{ name: 'Vehicles', image: '../../../../public/stockpile/categories/IconFilterVehicle.webp' },
-	{ name: 'Vehicle Crates', image: '../../../../public/stockpile/categories/IconFilterVehicleCrate.webp' },
-	{ name: 'Shippable Structures', image: '../../../../public/stockpile/categories/IconFilterShippables.webp' },
-	{ name: 'Shippable Structure Crates', image: '../../../../public/stockpile/categories/ShippableCrateIcon.webp' }
+	{ name: 'All', image: '/stockpile/categories/IconFilterAll.webp' },
+	{ name: 'Small Arms', image: '/stockpile/categories/IconFilterSmallWeapons.webp' },
+	{ name: 'Heavy Arms', image: '/stockpile/categories/IconFilterHeavyWeapons.webp' },
+	{ name: 'Heavy Ammunition', image: '/stockpile/categories/IconFilterHeavyAmmunition.webp' },
+	{ name: 'Utility', image: '/stockpile/categories/IconFilterUtility.webp' },
+	{ name: 'Medical', image: '/stockpile/categories/IconFilterMedical.webp' },
+	{ name: 'Resource', image: '/stockpile/categories/IconFilterResource.webp' },
+	{ name: 'Uniforms', image: '/stockpile/categories/IconFilterUniforms.webp' },
+	{ name: 'Vehicles', image: '/stockpile/categories/IconFilterVehicle.webp' },
+	{ name: 'Vehicle Crates', image: '/stockpile/categories/IconFilterVehicleCrate.webp' },
+	{ name: 'Shippable Structures', image: '/stockpile/categories/IconFilterShippables.webp' },
+	{ name: 'Shippable Structure Crates', image: '/stockpile/categories/ShippableCrateIcon.webp' }
 ]
 
 // Foxhole military-inspired color palette
