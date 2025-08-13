@@ -1,6 +1,6 @@
 import { createCommandConfig, logger } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
-import { StockpileManager } from '../../api/objects/stockpile'
+import { StockpileManager } from '../../data/stockpile'
 
 logger.info('registerd ping')
 /*

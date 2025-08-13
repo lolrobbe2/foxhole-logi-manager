@@ -1,4 +1,5 @@
-import FoxholeApi from "../data/foxhole/api"
+import { StockpileManager } from "../../data/stockpile"
+
 
 /**
  * This is an example API route for GET /api/hello
@@ -11,5 +12,5 @@ import FoxholeApi from "../data/foxhole/api"
  * https://robojs.dev/plugins/server
  */
 export default async () => {
-	return await FoxholeApi.getStaticMapData("DeadLandsHex")
+    return await StockpileManager.getAllRegions();
 }

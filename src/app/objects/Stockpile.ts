@@ -65,7 +65,19 @@ export class StockpileManager {
 	 * Region is the first segment of the name (before the first underscore).
 	 */
 	public static async getAllRegions(): Promise<string[]> {
-		return []
+		try {
+			const response = await fetch('http://localhost:3000/api/stockpile/getregions')
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch regions: ${response.status} ${response.statusText}`)
+			}
+
+			const regions: string[] = await response.json()
+			return regions
+		} catch (error) {
+			console.error('Error fetching regions:', error)
+			return []
+		}
 	}
 
 	/**
