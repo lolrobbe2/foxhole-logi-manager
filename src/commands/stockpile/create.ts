@@ -42,7 +42,6 @@ export default async (interaction: ChatInputCommandInteraction) => {
   const name = interaction.options.getString('name', true)
   const code = interaction.options.getString('code', true)
 
-  logger.info(`Create stockpile command used by ${interaction.user.tag}`)
 
   if (!isValidCode(code)) {
     await interaction.reply({ content: 'Error: Code must be exactly 6 digits numeric.', ephemeral: true })
