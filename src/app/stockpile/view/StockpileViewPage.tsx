@@ -19,7 +19,6 @@ export const StockpileViewPage = () => {
 
 		setStockpile(location.state.stockpile as Stockpile)
 		setLoading(false)
-		console.log(location.state.stockpile as Stockpile)
 	}, [location.state, navigate])
 
 	if (loading) {

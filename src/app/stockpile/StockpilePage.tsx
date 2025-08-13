@@ -42,7 +42,6 @@ export const StockpilesPage = () => {
     }, [selectedRegion]);
 
     const handleCreateStockpile = (name: string, code: string) => {
-        console.log('Creating stockpile:', { region: selectedRegion, name, code });
         setOpenDialog(false);
     };
 

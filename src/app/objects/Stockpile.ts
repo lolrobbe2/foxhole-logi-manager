@@ -121,7 +121,6 @@ export class StockpileManager {
 			throw new Error(`Failed to fetch stockpiles: ${response.statusText}`)
 		}
 		const data = await response.json();
-		console.log(response)
 		return (data) as Stockpile
 	}
 

@@ -17,7 +17,6 @@ export default async (req: RoboRequest) => {
     
 		
 	} catch (error) {
-    console.log(req.body)
   }
 	const all = await StockpileManager.getStockpiles()
 	return RoboResponse.json(all)
