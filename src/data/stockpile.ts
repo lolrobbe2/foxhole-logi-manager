@@ -3,13 +3,14 @@ import FirestoreCollection from './collection'
 import FirestoreDocument from './FirestoreDocument'
 
 export interface StockpileItem {
-	[itemName: string]: number
+    name: string;
+    count: number;
 }
 
 export interface Stockpile {
 	name: string // format: region_subregion_name
 	code: string
-	items: StockpileItem
+	items: StockpileItem[]
 }
 
 export class StockpileManager {
@@ -45,7 +46,7 @@ export class StockpileManager {
 		const newStockpile: Stockpile = {
 			name: combinedName,
 			code: code ?? combinedName,
-			items: {}
+			items: []
 		}
 
 		// Add the document to Firestore

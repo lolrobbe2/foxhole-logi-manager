@@ -1,14 +1,14 @@
 import { Box, IconButton } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
-
-export interface CategoryItem {
-	name: string;
-	image: string;
+import { CategoryItem } from '../../../app/objects/categoryItems';
+export interface CategorySelectorItem {
+    name: string
+    image: string // file name, e.g. "44-magnum.webp"
 }
 
 interface CategoriesSelectorProps {
-	categories: CategoryItem[];
-	onCategoryClick?: (category: CategoryItem) => void;
+	categories: CategorySelectorItem[];
+	onCategoryClick?: (category: CategorySelectorItem) => void;
 	selectedCategory?: string;
 }
 
@@ -92,3 +92,5 @@ export const CategoriesSelector: FC<CategoriesSelectorProps> = ({
 		</Box>
 	);
 };
+export { CategorySelectorItem };
+

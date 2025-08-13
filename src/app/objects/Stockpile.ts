@@ -1,7 +1,7 @@
 export interface StockpileItem {
-	[itemName: string]: number
+    name: string;
+    count: number;
 }
-
 export class Stockpile {
     name: string; // format: region_subregion_name
     code: string;
