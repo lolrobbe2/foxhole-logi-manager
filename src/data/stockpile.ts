@@ -34,6 +34,14 @@ export class StockpileManager {
 		code?: string
 	): Promise<void> {
 		const combinedName = `${region}_${subregion}_${name}`
+		const docRef: FirestoreDocument<Stockpile> = this.stockpileCollection.doc(combinedName)
+
+		// Check if it already exists
+		const existingDoc = await docRef.get()
+		if (existingDoc != null) {
+			throw new Error(`A stockpile with the name "${combinedName}" already exists.`)
+		}
+
 		const newStockpile: Stockpile = {
 			name: combinedName,
 			code: code ?? combinedName,
@@ -41,7 +49,6 @@ export class StockpileManager {
 		}
 
 		// Add the document to Firestore
-		const docRef: FirestoreDocument<Stockpile> = this.stockpileCollection.doc(combinedName)
 		await docRef.set(newStockpile)
 	}
 
@@ -74,16 +81,16 @@ export class StockpileManager {
 		return Array.from(set)
 	}
 
-  public static async removeAllStockpiles(): Promise<void> {
-    const docs: FirestoreDocument<Stockpile>[] = await this.stockpileCollection.getDocs();
+	public static async removeAllStockpiles(): Promise<void> {
+		const docs: FirestoreDocument<Stockpile>[] = await this.stockpileCollection.getDocs()
 
-    for (const doc of docs) {
-      await doc.delete();
-    }
-  }
-  public static async removeStockpile(region: string, subregion: string, name: string): Promise<void> {
-    const combinedName = `${region}_${subregion}_${name}`;
-    const doc: FirestoreDocument<Stockpile> = this.stockpileCollection.doc(combinedName);
-    await doc.delete();
-  }
+		for (const doc of docs) {
+			await doc.delete()
+		}
+	}
+	public static async removeStockpile(region: string, subregion: string, name: string): Promise<void> {
+		const combinedName = `${region}_${subregion}_${name}`
+		const doc: FirestoreDocument<Stockpile> = this.stockpileCollection.doc(combinedName)
+		await doc.delete()
+	}
 }

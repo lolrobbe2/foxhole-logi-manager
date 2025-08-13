@@ -1,21 +1,48 @@
-import DiscordService from '../../app/discord'
-// Stub: you should provide this externally or implement your real Discord connection check
-
-import { Flashcore } from 'robo.js'
-//const Flashcore = {};
 export interface StockpileItem {
 	[itemName: string]: number
 }
 
-export interface Stockpile {
-	name: string // format: region_subregion_name
-	code: string
-	items: StockpileItem
+export interface StockpileItem {
+    // define item properties here
+}
+
+export class Stockpile {
+    name: string; // format: region_subregion_name
+    code: string;
+    items: StockpileItem[];
+
+    constructor(name: string, code: string, items: StockpileItem[]) {
+        this.name = name;
+        this.code = code;
+        this.items = items;
+    }
+
+    /** Returns the region part of the stockpile name */
+    public static getRegion(stockpile: Stockpile): string {
+        return stockpile.name.split("_")[0] ?? "";
+    }
+
+    /** Returns the subregion part of the stockpile name */
+    public static getSubregion(stockpile: Stockpile): string {
+        return stockpile.name.split("_")[1] ?? "";
+    }
+
+    /** Returns the display name part of the stockpile name */
+    public static getDisplayName(stockpile: Stockpile): string {
+        const parts = stockpile.name.split("_");
+        return parts.slice(2).join("_") ?? "";
+    }
+
+    /** Returns the raw region for API calls (no spaces, with Hex suffix) */
+    public static getRawRegion(stockpile: Stockpile): string {
+        const rawRegion = stockpile.name.split("_")[0] ?? "";
+        return rawRegion.replace(/\s+/g, "") + "Hex";
+    }
 }
 
 export class StockpileManager {
 	public static async getStockpiles(): Promise<Stockpile[]> {
-		const response = await fetch('api/stockpiles/get', {
+		const response = await fetch('api/stockpile/get', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({}) // empty body to get all stockpiles
@@ -35,7 +62,26 @@ export class StockpileManager {
 		subregion: string,
 		name: string,
 		code?: string
-	): Promise<void> {}
+	): Promise<void> {
+		const params = new URLSearchParams({
+			region,
+			subregion,
+			name
+		})
+
+		if (code) {
+			params.append('code', code)
+		}
+
+		const response = await fetch(`/api/stockpile/create?${params.toString()}`, {
+			method: 'POST'
+		})
+
+		if (!response.ok) {
+			const text = await response.text()
+			throw new Error(`Failed to create stockpile: ${text}`)
+		}
+	}
 
 	/**
 	 * Return all stockpiles whose name starts with the given region.
@@ -43,21 +89,40 @@ export class StockpileManager {
 	 */
 	public static async getStockpilesByRegion(region: string): Promise<Stockpile[]> {
 		// build the URL with optional query param
-		let url = 'api/stockpiles/get'
+		let url = 'api/stockpile/get'
 		if (region) {
 			url += `?region=${encodeURIComponent(region)}`
 		}
 
 		const response = await fetch(url, {
 			method: 'GET', // switch to GET since you're using query params
-			headers: { 'Content-Type': 'application/json' }
 		})
-
+		
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stockpiles: ${response.statusText}`)
 		}
 
 		return (await response.json()) as Stockpile[]
+	}
+
+	public static async getStockpileByEncodedName(encodedName: string): Promise<Stockpile | undefined> {
+		// build the URL with optional query param
+		let url = 'api/stockpile/getencoded'
+		if (encodedName) {
+			url += `?encodedname=${encodeURIComponent(encodedName)}`
+		}
+
+		const response = await fetch(url, {
+			method: 'GET', // switch to GET since you're using query params
+			headers: { 'Content-Type': 'application/json' }
+		})
+		
+		if (!response.ok) {
+			throw new Error(`Failed to fetch stockpiles: ${response.statusText}`)
+		}
+		const data = await response.json();
+		console.log(response)
+		return (data) as Stockpile
 	}
 
 	/**
@@ -66,7 +131,7 @@ export class StockpileManager {
 	 */
 	public static async getAllRegions(): Promise<string[]> {
 		try {
-			const response = await fetch('http://localhost:3000/api/stockpile/getregions')
+			const response = await fetch('api/stockpile/getregions')
 
 			if (!response.ok) {
 				throw new Error(`Failed to fetch regions: ${response.status} ${response.statusText}`)
