@@ -1,25 +1,48 @@
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { CircularProgress, Typography, Box, Chip, Stack } from '@mui/material'
-import { Stockpile } from '../../objects/Stockpile'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { CircularProgress, Typography, Box, Chip } from '@mui/material';
+import { Stockpile } from '../../objects/Stockpile';
+import { CategoriesSelector, CategoryItem } from './CategoriesSelector';
+import { CategoryItemsGrid } from './StockpileGrid'; // <- new import
+import { categoryItems } from './categoryItems';
+
+const categories: CategoryItem[] = [
+	{ name: 'All', image: '../../../../public/stockpile/categories/IconFilterAll.webp' },
+	{ name: 'Small Arms', image: '../../../../public/stockpile/categories/IconFilterSmallWeapons.webp' },
+	{ name: 'Heavy Arms', image: '../../../../public/stockpile/categories/IconFilterHeavyWeapons.webp' },
+    { name: 'Heavy Ammunition', image: '../../../../public/stockpile/categories/IconFilterHeavyAmmunition.webp' },
+    { name: 'Utility', image: '../../../../public/stockpile/categories/IconFilterUtility.webp' },
+
+];
+
+
+
+// Foxhole military-inspired color palette
+const colors = {
+	background: '#1b1b1b',
+	sidebar: '#2a2a2a',
+	accent: '#7a5c3c',
+	highlight: '#4a5c4d',
+	text: '#e0e0d1'
+};
 
 export const StockpileViewPage = () => {
-	const navigate = useNavigate()
-	const location = useLocation()
-	const [stockpile, setStockpile] = useState<Stockpile | null>(null)
-	const [loading, setLoading] = useState(true)
+	const navigate = useNavigate();
+	const location = useLocation();
+	const [stockpile, setStockpile] = useState<Stockpile | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
 	useEffect(() => {
 		if (!location.state?.stockpile) {
-			setStockpile(null)
-			setLoading(false)
-			navigate('/stockpiles', { replace: true })
-			return
+			setStockpile(null);
+			setLoading(false);
+			navigate('/stockpiles', { replace: true });
+			return;
 		}
-
-		setStockpile(location.state.stockpile as Stockpile)
-		setLoading(false)
-	}, [location.state, navigate])
+		setStockpile(location.state.stockpile as Stockpile);
+		setLoading(false);
+	}, [location.state, navigate]);
 
 	if (loading) {
 		return (
@@ -29,53 +52,92 @@ export const StockpileViewPage = () => {
 					justifyContent: 'center',
 					alignItems: 'center',
 					height: '100%',
-					bgcolor: '#121212'
+					bgcolor: colors.background
 				}}
 			>
-				<CircularProgress sx={{ color: '#f5f5f5' }} />
+				<CircularProgress sx={{ color: colors.text }} />
 			</Box>
-		)
+		);
 	}
 
 	if (stockpile == null) {
 		return (
-			<Box sx={{textAlign: 'center', bgcolor: '#121212' }}>
-				<Typography variant="h5" sx={{ color: '#f5f5f5' }}>
+			<Box sx={{ textAlign: 'center', bgcolor: colors.background }}>
+				<Typography variant="h5" sx={{ color: colors.text }}>
 					Stockpile not found
 				</Typography>
 			</Box>
-		)
+		);
 	}
 
 	return (
-		<Box sx={{ bgcolor: '#121212', minHeight: '100vh' }}>
+		<Box sx={{ bgcolor: colors.background, minHeight: '100vh' }}>
 			{/* Banner */}
 			<Box
 				sx={{
-					p: '1.5rem',
+					ml: '1.5rem',
+					mr: '1.5rem',
 					mb: '2rem',
-					bgcolor: '#1f1f1f',
+					bgcolor: colors.sidebar,
 					borderRadius: '1rem',
 					boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
 					display: 'flex',
-					flexDirection: 'column',
-					gap: '0.75rem'
+					alignItems: 'center',
+					justifyContent: 'center',
+					position: 'relative',
+					textAlign: 'center',
+					minHeight: '4rem'
 				}}
 			>
-				{/* Display Name as Title */}
-				<Typography variant="h4" sx={{ color: '#f5f5f5' }}>
-					{Stockpile.getDisplayName(stockpile)}
-				</Typography>
-
-				{/* Region & Subregion as Chips (inline) */}
-				<Box sx={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-					<Chip label={Stockpile.getRegion(stockpile)} sx={{ bgcolor: '#1e88e5', color: '#fff', fontWeight: 'bold' }} />
+				{/* Region & Subregion Chips */}
+				<Box
+					sx={{
+						position: 'absolute',
+						left: '1.5rem',
+						display: 'flex',
+						gap: '0.5rem',
+						flexWrap: 'wrap'
+					}}
+				>
+					<Chip
+						label={Stockpile.getRegion(stockpile)}
+						sx={{
+							bgcolor: colors.accent,
+							color: colors.text,
+							fontWeight: 'bold'
+						}}
+					/>
 					<Chip
 						label={Stockpile.getSubregion(stockpile)}
-						sx={{ bgcolor: '#43a047', color: '#fff', fontWeight: 'bold' }}
+						sx={{
+							bgcolor: colors.highlight,
+							color: colors.text,
+							fontWeight: 'bold'
+						}}
 					/>
 				</Box>
+
+				{/* Title */}
+				<Typography variant="h4" sx={{ color: colors.text }}>
+					{Stockpile.getDisplayName(stockpile)}
+				</Typography>
+			</Box>
+
+			{/* Categories */}
+			<CategoriesSelector
+				selectedCategory={selectedCategory}
+				categories={categories}
+				onCategoryClick={(cat) => setSelectedCategory(cat.name)}
+			/>
+
+			{/* Items Grid */}
+			<Box sx={{ mt: '2rem', px: '1.5rem' }}>
+				<CategoryItemsGrid
+					category={selectedCategory}
+					itemNames={categoryItems[selectedCategory] ?? []}
+					stockpileItems={stockpile.items}
+				/>
 			</Box>
 		</Box>
-	)
-}
+	);
+};
