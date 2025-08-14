@@ -1,39 +1,39 @@
 export interface StockpileItem {
-    name: string;
-    count: number;
+	name: string;
+	count: number;
 }
 export class Stockpile {
-    name: string; // format: region_subregion_name
-    code: string;
-    items: StockpileItem[];
+	name: string; // format: region_subregion_name
+	code: string;
+	items: StockpileItem[];
 
-    constructor(name: string, code: string, items: StockpileItem[]) {
-        this.name = name;
-        this.code = code;
-        this.items = items;
-    }
+	constructor(name: string, code: string, items: StockpileItem[]) {
+		this.name = name;
+		this.code = code;
+		this.items = items;
+	}
 
-    /** Returns the region part of the stockpile name */
-    public static getRegion(stockpile: Stockpile): string {
-        return stockpile.name.split("_")[0] ?? "";
-    }
+	/** Returns the region part of the stockpile name */
+	public static getRegion(stockpile: Stockpile): string {
+		return stockpile.name.split("_")[0] ?? "";
+	}
 
-    /** Returns the subregion part of the stockpile name */
-    public static getSubregion(stockpile: Stockpile): string {
-        return stockpile.name.split("_")[1] ?? "";
-    }
+	/** Returns the subregion part of the stockpile name */
+	public static getSubregion(stockpile: Stockpile): string {
+		return stockpile.name.split("_")[1] ?? "";
+	}
 
-    /** Returns the display name part of the stockpile name */
-    public static getDisplayName(stockpile: Stockpile): string {
-        const parts = stockpile.name.split("_");
-        return parts.slice(2).join("_") ?? "";
-    }
+	/** Returns the display name part of the stockpile name */
+	public static getDisplayName(stockpile: Stockpile): string {
+		const parts = stockpile.name.split("_");
+		return parts.slice(2).join("_") ?? "";
+	}
 
-    /** Returns the raw region for API calls (no spaces, with Hex suffix) */
-    public static getRawRegion(stockpile: Stockpile): string {
-        const rawRegion = stockpile.name.split("_")[0] ?? "";
-        return rawRegion.replace(/\s+/g, "") + "Hex";
-    }
+	/** Returns the raw region for API calls (no spaces, with Hex suffix) */
+	public static getRawRegion(stockpile: Stockpile): string {
+		const rawRegion = stockpile.name.split("_")[0] ?? "";
+		return rawRegion.replace(/\s+/g, "") + "Hex";
+	}
 }
 
 export class StockpileManager {
@@ -49,9 +49,9 @@ export class StockpileManager {
 		return (await response.json()) as Stockpile[]
 	}
 
-	public static async saveStockpiles(stockpiles: Stockpile[]): Promise<void> {}
+	public static async saveStockpiles(stockpiles: Stockpile[]): Promise<void> { }
 
-	public static async addOrUpdateStockpile(newStockpile: Stockpile): Promise<void> {}
+	public static async addOrUpdateStockpile(newStockpile: Stockpile): Promise<void> { }
 
 	public static async createEmptyStockpile(
 		region: string,
@@ -93,7 +93,7 @@ export class StockpileManager {
 		const response = await fetch(url, {
 			method: 'GET', // switch to GET since you're using query params
 		})
-		
+
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stockpiles: ${response.statusText}`)
 		}
@@ -112,7 +112,7 @@ export class StockpileManager {
 			method: 'GET', // switch to GET since you're using query params
 			headers: { 'Content-Type': 'application/json' }
 		})
-		
+
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stockpiles: ${response.statusText}`)
 		}
@@ -145,4 +145,73 @@ export class StockpileManager {
 	public static async removeAllStockpiles(): Promise<void> {
 		return
 	}
+
+	public static async addItem(
+		region: string,
+		subregion: string,
+		name: string,
+		itemName: string,
+		count: number
+	): Promise<void> {
+		const params = new URLSearchParams({
+			region,
+			subregion,
+			name,
+			itemName,
+			count: count.toString()
+		});
+
+		const response = await fetch(`/api/stockpile/item/add?${params.toString()}`, {
+			method: 'POST'
+		});
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new Error(error.error || 'Failed to add item');
+		}
+	}
+	public static async removeItem(
+		region: string,
+		subregion: string,
+		name: string,
+		itemName: string,
+		count: number
+	): Promise<void> {
+		const params = new URLSearchParams({
+			region,
+			subregion,
+			name,
+			itemName,
+			count: count.toString()
+		});
+
+		const response = await fetch(`/api/stockpile/item/remove?${params.toString()}`, {
+			method: 'DELETE'
+		});
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new Error(error.error || 'Failed to remove item');
+		}
+	}
+	public static async getSingleStockpile(region: string, subregion: string, name: string): Promise<any> {
+		const params = new URLSearchParams({
+			region,
+			subregion,
+			name,
+		});
+		
+		const url = `/api/stockpile/getsingle?${params.toString() }`;
+
+		const response = await fetch(url, {
+			method: 'GET'
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch stockpile: ${response.statusText}`);
+		}
+
+		return await response.json();
+	}
+
 }

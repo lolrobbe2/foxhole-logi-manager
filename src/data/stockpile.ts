@@ -1,10 +1,9 @@
-import { Collection } from 'discord.js'
-import FirestoreCollection from './collection'
-import FirestoreDocument from './FirestoreDocument'
+import FirestoreCollection from './collection';
+import FirestoreDocument from './FirestoreDocument';
 
 export interface StockpileItem {
-    name: string;
-    count: number;
+	name: string;
+	count: number;
 }
 
 export interface Stockpile {
@@ -94,4 +93,72 @@ export class StockpileManager {
 		const doc: FirestoreDocument<Stockpile> = this.stockpileCollection.doc(combinedName)
 		await doc.delete()
 	}
+
+	public static async addItem(
+		region: string,
+		subregion: string,
+		name: string,
+		itemName: string,
+		count: number
+	): Promise<void> {
+		const combinedName = `${region}_${subregion}_${name}`;
+		const docRef = this.stockpileCollection.doc(combinedName);
+
+		const stockpile = await docRef.get();
+		if (!stockpile) {
+			throw new Error(`Stockpile "${combinedName}" not found.`);
+		}
+
+		const updatedItems = [...stockpile.items];
+		const existingIndex = updatedItems.findIndex(item => item.name === itemName);
+
+		if (existingIndex >= 0) {
+			updatedItems[existingIndex].count += count;
+		} else {
+			updatedItems.push({ name: itemName, count });
+		}
+
+		await docRef.set({ ...stockpile, items: updatedItems });
+	}
+
+	public static async removeItem(
+		region: string,
+		subregion: string,
+		name: string,
+		itemName: string,
+		count: number
+	): Promise<void> {
+		const combinedName = `${region}_${subregion}_${name}`;
+		const docRef = this.stockpileCollection.doc(combinedName);
+
+		const stockpile = await docRef.get();
+		if (stockpile == null) {
+			throw new Error(`Stockpile "${combinedName}" not found.`);
+		}
+
+		let updatedItems = [...stockpile.items];
+		const existingIndex = updatedItems.findIndex(item => item.name === itemName);
+
+		if (existingIndex >= 0) {
+			updatedItems[existingIndex].count -= count;
+			if (updatedItems[existingIndex].count <= 0) {
+				updatedItems.splice(existingIndex, 1); // remove item if count is 0 or less
+			}
+		}
+
+		await docRef.set({ ...stockpile, items: updatedItems });
+	}
+	
+	public static async getSingleStockpile(
+		region: string,
+		subregion: string,
+		name: string
+	): Promise<Stockpile | null> {
+		const combinedName = `${region}_${subregion}_${name}`;
+		const docRef = this.stockpileCollection.doc(combinedName);
+
+		const stockpile = await docRef.get();
+		return stockpile ?? null;
+	}
+
 }

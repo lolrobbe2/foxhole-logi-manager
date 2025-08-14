@@ -1,7 +1,5 @@
-import { RoboResponse } from '@robojs/server'
-import { RoboRequest } from '@robojs/server'
+import { RoboRequest, RoboResponse } from '@robojs/server'
 import { StockpileManager } from '../../data/stockpile'
-import { error } from 'console'
 
 interface RequestBody {
 	region?: string

@@ -1,11 +1,11 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Box, Chip, CircularProgress, List, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { CircularProgress, Typography, Box, Chip, List } from '@mui/material'
-import { Stockpile } from '../../objects/Stockpile'
-import { CategoriesSelector, CategorySelectorItem } from './CategoriesSelector'
-import { CategoryItemsGrid } from './StockpileGrid'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { CategoryItem, categoryItems } from '../../objects/categoryItems'
-import { ItemTransaction } from './ItemTransaction' // <- import ItemTransaction
+import { Stockpile, StockpileManager } from '../../objects/Stockpile'
+import { CategoriesSelector, CategorySelectorItem } from './CategoriesSelector'
+import { ItemTransaction } from './ItemTransaction'; // <- import ItemTransaction
+import { CategoryItemsGrid } from './StockpileGrid'
 
 const categories: CategorySelectorItem[] = [
 	{ name: 'All', image: '/stockpile/categories/IconFilterAll.webp' },
@@ -198,13 +198,16 @@ export const StockpileViewPage = () => {
 					height: '100%',
 					bgcolor: colors.sidebar,
 					p: '1rem',
-					overflowY: 'auto'
+					overflowY: 'auto',
+					display: 'flex',
+					flexDirection: 'column'
 				}}
 			>
 				<Typography variant="h6" sx={{ color: colors.text, mb: '1rem' }}>
 					Item Transactions
 				</Typography>
-				<List>
+
+				<List sx={{ flexGrow: 1 }}>
 					{transactions.map((t, idx) => (
 						<ItemTransaction
 							key={idx}
@@ -232,7 +235,64 @@ export const StockpileViewPage = () => {
 						/>
 					))}
 				</List>
+
+				{/* Complete Transaction Button */}
+				<Box sx={{ mt: '1rem' }}>
+					<button
+						style={{
+							width: '100%',
+							padding: '0.75rem',
+							backgroundColor: transactions.length > 0 ? '#4caf50' : '#555',
+							color: '#fff',
+							border: 'none',
+							borderRadius: '0.5rem',
+							fontWeight: 'bold',
+							cursor: transactions.length > 0 ? 'pointer' : 'not-allowed'
+						}}
+						disabled={transactions.length === 0}
+						onClick={async () => {
+							try {
+								if (!stockpile) return;
+
+								for (const tx of transactions) {
+									if (tx.inbound) {
+										await StockpileManager.addItem(
+											Stockpile.getRegion(stockpile),
+											Stockpile.getSubregion(stockpile),
+											Stockpile.getDisplayName(stockpile),
+											tx.itemName,
+											tx.quantity
+										);
+									} else {
+										await StockpileManager.removeItem(
+											Stockpile.getRegion(stockpile),
+											Stockpile.getSubregion(stockpile),
+											Stockpile.getDisplayName(stockpile),
+											tx.itemName,
+											tx.quantity
+										);
+									}
+								}
+
+								// Optionally: refresh stockpile data from server after commit
+								const updated = await StockpileManager.getSingleStockpile(Stockpile.getRegion(stockpile),
+									Stockpile.getSubregion(stockpile),
+									Stockpile.getDisplayName(stockpile))
+								setStockpile(updated);
+
+								// Clear transactions after committing
+								setTransactions([]);
+							} catch (err) {
+								console.error('Failed to complete transactions:', err);
+								alert('One or more transactions failed to process.');
+							}
+						}}
+					>
+						Complete Transaction
+					</button>
+				</Box>
 			</Box>
+
 		</Box>
 	)
 }
