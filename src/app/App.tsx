@@ -1,3 +1,4 @@
+import { BrowserRouter } from 'react-router-dom'
 import { DiscordContextProvider } from '../hooks/useDiscordSdk'
 import { Activity } from './Activity'
 import './App.css'
@@ -18,7 +19,9 @@ import './App.css'
 export default function App() {
   return (
     <DiscordContextProvider authenticate scope={['identify', 'guilds', 'applications.commands']}>
+      <BrowserRouter>
         <Activity />
+      </BrowserRouter>
     </DiscordContextProvider>
   )
 }

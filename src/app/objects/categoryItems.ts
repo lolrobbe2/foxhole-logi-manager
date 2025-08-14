@@ -49,10 +49,24 @@ const categoriesRaw: Record<string, Omit<CategoryItem, 'category'>[]> = {
 		{ name: 'Malone MK.2', image: 'MGWItemIcon.webp', faction: 'warden' },
 	],
 	'Heavy Arms': [
+		{ name: '20mm', image: 'ATRifleAmmoItemIcon.webp', faction: 'none' },
+		{ name: '“Dawn” Ve.II', image: 'ATRifleLightCIcon.webp', faction: 'colonial' },
+		{ name: '“Typhon” ra.XII', image: 'ATRifleTCIcon.png', faction: 'warden' },
+		{ name: '“Quickhatch” Rt.I', image: 'ATRifleSniperCIcontga.webp', faction: 'warden' },
+		{ name: '20 Neville Anti-Tank Rifle', image: 'ATRifleItemIcon.webp', faction: 'warden' },
+		{ name: 'Booker Greyhound Model 910 ', image: 'ATRifleAutomaticWItemIcon.webp', faction: 'warden' },
+		{ name: '228 Satterley Heavy Storm Rifle', image: 'ATRifleAssaultWIcontga.webp', faction: 'warden' },
+		{ name: '“Molten Wind” v.II Ammo', image: 'FlamePackCIcon.png', faction: 'colonial' },
+		{ name: '“Molten Wind” v.II Flame Torch', image: 'FlamegunCICon.webp', faction: 'none' },
+		{ name: "Willow's Bane Ammo", image: 'FlamePackWIcon.png', faction: 'none' },
+		{ name: "Willow's Bane Model 845", image: 'FlamegunWICon.png', faction: 'none' },
 		{ name: '', image: '', faction: 'none' },
 		{ name: '', image: '', faction: 'none' },
 		{ name: '', image: '', faction: 'none' },
 		{ name: '', image: '', faction: 'none' },
+		{ name: '', image: '', faction: 'none' },
+		{ name: '', image: '', faction: 'none' },
+
 	]
 }
 
