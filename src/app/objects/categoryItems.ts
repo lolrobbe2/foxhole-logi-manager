@@ -5,10 +5,11 @@ export interface CategoryItem {
 	name: string
 	image: string // file name, e.g. "44-magnum.webp"
 	faction: Faction
+	category: string
 }
 
-export const categoryItems: Record<string, CategoryItem[]> = {
-	All: [],
+// Original categories without the category field
+const categoriesRaw: Record<string, Omit<CategoryItem, 'category'>[]> = {
 	'Small Arms': [
 		{ name: '.44', image: 'RevolverAmmoItemIcon.webp', faction: 'none' },
 		{ name: 'Cometa T2-9', image: 'RevolverItemIcon.webp', faction: 'none' },
@@ -36,11 +37,25 @@ export const categoryItems: Record<string, CategoryItem[]> = {
 		{ name: 'Fiddler Submachine Gun Model 868', image: 'SubMachineGunIcon.webp', faction: 'warden' },
 		{ name: 'No.1 “The Liar” Submachine Gun', image: 'SMGHeavyWItemIcon.webp', faction: 'warden' },
 		{ name: 'Buckshot', image: 'ShotgunAmmoItemIcon.webp', faction: 'none' },
-		{ name: '', image: '', faction: 'none' },
-		{ name: '', image: '', faction: 'none' },
-		{ name: '', image: '', faction: 'none' },
-		{ name: '', image: '', faction: 'none' },
-		{ name: '', image: '', faction: 'none' },
+		{ name: 'KRF1-750 Dragonfly', image: 'ShotgunCItemIcon.webp', faction: 'colonial' },
+		{ name: 'No.4 The Pillory Scattergun', image: 'ShotgunWItemIcon.webp', faction: 'warden' },
+		{ name: 'Green Ash Grenade', image: 'DeadlyGas01Icon.webp', faction: 'none' },
+		{ name: 'Bomastone Grenade', image: 'GrenadeCItemIcon.webp', faction: 'colonial' },
+		{ name: 'A3 Harpa Fragmentation Grenade', image: 'GrenadeItemIcon.webp', faction: 'warden' },
 		{ name: '', image: '', faction: 'none' }
 	]
+}
+
+// Add the category to each item
+const categories: Record<string, CategoryItem[]> = Object.fromEntries(
+	Object.entries(categoriesRaw).map(([category, items]) => [
+		category,
+		items.map(item => ({ ...item, category }))
+	])
+)
+
+// Add "All" category automatically
+export const categoryItems: Record<string, CategoryItem[]> = {
+	All: Object.values(categories).flat(),
+	...categories
 }

@@ -1,8 +1,8 @@
-import React, { FC, useMemo } from 'react';
 import { Box, Typography } from '@mui/material';
-import { Item } from './StockpileItem';
+import { FC, useMemo } from 'react';
 import { StockpileItem } from '../../../app/objects/Stockpile';
 import { CategoryItem } from '../../../app/objects/categoryItems';
+import { Item } from './StockpileItem';
 
 interface CategoryItemsGridProps {
     category: string;
@@ -85,7 +85,7 @@ export const CategoryItemsGrid: FC<CategoryItemsGridProps> = ({
                     <Item
                         key={`${idx}-${it.item.name}`}
                         name={it.item.name}
-                        category={category}
+                        category={it.item.category}
                         count={it.count ?? null}
                         image={it.item.image}
                         faction={it.item.faction || 'none'}
