@@ -42,7 +42,17 @@ const categoriesRaw: Record<string, Omit<CategoryItem, 'category'>[]> = {
 		{ name: 'Green Ash Grenade', image: 'DeadlyGas01Icon.webp', faction: 'none' },
 		{ name: 'Bomastone Grenade', image: 'GrenadeCItemIcon.webp', faction: 'colonial' },
 		{ name: 'A3 Harpa Fragmentation Grenade', image: 'GrenadeItemIcon.webp', faction: 'warden' },
-		{ name: '', image: '', faction: 'none' }
+		{ name: 'Smoke Grenade', image: 'Smokegrenadeicon1.webp', faction: 'none' },
+		{ name: '12.7mm', image: 'MachineGunAmmoIcon.webp', faction: 'none' },
+		{ name: 'Catara mo.II', image: 'LightMachineGunIcon.webp', faction: 'colonial' },
+		{ name: 'KRN886-127 Gast Machine Gun', image: 'MGCItemIcon.webp', faction: 'warden' },
+		{ name: 'Malone MK.2', image: 'MGWItemIcon.webp', faction: 'warden' },
+	],
+	'Heavy Arms': [
+		{ name: '', image: '', faction: 'none' },
+		{ name: '', image: '', faction: 'none' },
+		{ name: '', image: '', faction: 'none' },
+		{ name: '', image: '', faction: 'none' },
 	]
 }
 
