@@ -62,7 +62,7 @@ export const StockpileViewPage = () => {
 		const transactionItem = {
 			itemName: item.name,
 			image: item.image,
-			category: selectedCategory, // use currently selected category
+			category: item.category, // use currently selected category
 			quantity: count ?? 1,
 			inbound: true
 		}
