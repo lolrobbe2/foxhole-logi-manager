@@ -1,25 +1,38 @@
 import { Box } from "@mui/material";
 import { MouseEvent, useEffect, useRef, useState } from "react";
+import { WindDial } from "./WindDirectionControl";
 
 interface Point {
     x: number; // pixel coordinates
     y: number;
 }
 
-interface RegionMapProps {
-    region: string;
-    onMeasure?: (data: { distance: number; azimuth: number }) => void;
-    selectedGun?: { mindistance: number; maxdistance: number } | null;
+interface SelectedGun {
+    mindistance: number;
+    maxdistance: number;
 }
 
-export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) => {
+interface Wind {
+    direction: number; // degrees from North
+    strength: number; // meters (same units as distance)
+}
+
+interface RegionMapProps {
+    region: string;
+    onMeasure?: (data: { distance: number; azimuth: number; distanceWithWind?: number; azimuthWithWind?: number }) => void;
+    selectedGun?: SelectedGun | null;
+    level?: number;
+}
+
+export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const [points, setPoints] = useState<Point[]>([]);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const draggingRef = useRef<{ x: number; y: number } | null>(null);
-    const [measurement, setMeasurement] = useState<{ distance: number; azimuth: number } | null>(null);
+    const [measurement, setMeasurement] = useState<{ distance: number; azimuth: number; distanceWithWind?: number; azimuthWithWind?: number } | null>(null);
     const [pixelToMeter, setPixelToMeter] = useState<number>(0.93622857142);
+    const [wind, setWind] = useState<Wind>({ direction: 0, strength: 0 });
 
     // Update PIXEL_TO_METER based on rendered image width
     useEffect(() => {
@@ -30,19 +43,45 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
         }
     }, [region]);
 
-    // Calculate distance and azimuth whenever points or pixelToMeter change
+    const WIND_DEVIATION = 5; // meters per level
+
+    // Calculate distance and azimuth whenever points, pixelToMeter, wind, or level change
     useEffect(() => {
-        if (points.length === 2 && pixelToMeter > 0) {
-            const { distance, azimuth } = calculateDistanceAndAzimuth(points[0], points[1], pixelToMeter);
-            setMeasurement({ distance, azimuth });
-            if (onMeasure) onMeasure({ distance, azimuth });
-        } else {
-            setMeasurement(null);
+        if (points.length !== 2 || pixelToMeter <= 0) {
+            if (measurement !== null) setMeasurement(null);
+            return;
         }
-    }, [points, onMeasure, pixelToMeter]);
+
+        const { distance, azimuth } = calculateDistanceAndAzimuth(points[0], points[1], pixelToMeter);
+
+        let distanceWithWind: number | undefined;
+        let azimuthWithWind: number | undefined;
+
+        if (level !== undefined) {
+            const windStrength = level * WIND_DEVIATION;
+            const windWithStrength = { direction: wind.direction, strength: windStrength };
+            ({ distance: distanceWithWind, azimuth: azimuthWithWind } = applyWind(distance, azimuth, windWithStrength));
+        }
+
+        const newMeasurement = { distance, azimuth, distanceWithWind, azimuthWithWind };
+
+        const epsilon = 0.0001;
+        if (
+            !measurement ||
+            Math.abs(measurement.distance - distance) > epsilon ||
+            Math.abs(measurement.azimuth - azimuth) > epsilon ||
+            (distanceWithWind !== undefined &&
+                Math.abs((measurement.distanceWithWind ?? 0) - distanceWithWind) > epsilon) ||
+            (azimuthWithWind !== undefined &&
+                Math.abs((measurement.azimuthWithWind ?? 0) - azimuthWithWind) > epsilon)
+        ) {
+            setMeasurement(newMeasurement);
+            if (onMeasure) onMeasure(newMeasurement);
+        }
+    }, [points, pixelToMeter, wind, level]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (e.button === 1) { // middle mouse button
+        if (e.button === 1) {
             draggingRef.current = { x: e.clientX - offset.x, y: e.clientY - offset.y };
             e.preventDefault();
         }
@@ -59,7 +98,6 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
             let newX = e.clientX - draggingRef.current.x;
             let newY = e.clientY - draggingRef.current.y;
 
-            // Clamp so image does not leave container
             newX = Math.min(0, Math.max(containerRect.width - imgRect.width, newX));
             newY = Math.min(0, Math.max(containerRect.height - imgRect.height, newY));
 
@@ -117,6 +155,11 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
                     }}
                 >
                     Distance: {measurement.distance.toFixed(1)} m | Azimuth: {measurement.azimuth.toFixed(1)}°
+                    {measurement.distanceWithWind !== undefined && measurement.azimuthWithWind !== undefined && (
+                        <>
+                            {" "} | With Wind: {measurement.distanceWithWind.toFixed(1)} m @ {measurement.azimuthWithWind.toFixed(1)}°
+                        </>
+                    )}
                 </Box>
             )}
 
@@ -213,7 +256,6 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
                         transform: `translate(${offset.x}px, ${offset.y}px)`,
                     }}
                 >
-                    {/* Max range - solid green */}
                     <circle
                         cx={points[0].x}
                         cy={points[0].y}
@@ -222,7 +264,6 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
                         strokeWidth={2}
                         fill="none"
                     />
-                    {/* Min range - dashed green */}
                     <circle
                         cx={points[0].x}
                         cy={points[0].y}
@@ -234,11 +275,14 @@ export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) =>
                     />
                 </svg>
             )}
+
+            {/* Wind Direction */}
+            <WindDial onChange={(dir) => setWind(prev => ({ ...prev, direction: dir }))} />
         </Box>
     );
 };
 
-// Utility: distance in meters, azimuth in degrees (north = 0°)
+// Distance & azimuth calculation
 function calculateDistanceAndAzimuth(p1: Point, p2: Point, pixelToMeter: number) {
     const dx = p2.x - p1.x;
     const dy = p2.y - p1.y;
@@ -248,4 +292,19 @@ function calculateDistanceAndAzimuth(p1: Point, p2: Point, pixelToMeter: number)
     const normalizedAzimuth = (azimuth + 360) % 360;
 
     return { distance, azimuth: normalizedAzimuth };
+}
+
+// Apply wind to distance and azimuth
+function applyWind(distance: number, azimuth: number, wind: Wind) {
+    // Simple vector addition (wind deviation in meters along wind direction)
+    const azRad = (azimuth * Math.PI) / 180;
+    const windRad = (wind.direction * Math.PI) / 180;
+
+    const dx = distance * Math.sin(azRad) + wind.strength * Math.sin(windRad);
+    const dy = distance * Math.cos(azRad) + wind.strength * Math.cos(windRad);
+
+    const newDistance = Math.sqrt(dx * dx + dy * dy);
+    const newAzimuth = (Math.atan2(dx, dy) * 180) / Math.PI;
+
+    return { distance: newDistance, azimuth: (newAzimuth + 360) % 360 };
 }
