@@ -11,6 +11,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
 import { SidebarLink } from "./SidebarNav";
+import { ArtilleryPage } from "./arty/ArtilleryPage";
 import { GPS } from "./gps/gps";
 import { StockpilesPage } from "./stockpile/StockpilePage";
 import { StockpileViewPage } from "./stockpile/view/StockpileViewPage";
@@ -55,6 +56,7 @@ const Sidebar = () => (
 			<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
 			<SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />
 			<SidebarLink to="/gps" label="GPS" highlightColor={colors.highlight} />
+			<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />
 		</List>
 	</Drawer>
 );
@@ -76,7 +78,7 @@ export const Activity = () => {
 		});
 	}, [authenticated, discordSdk]);
 
-	const isGpsPage = location.pathname === "/gps";
+	const isGpsPage = location.pathname === "/gps" || location.pathname === "/artillery";
 
 	return (
 		<Box sx={{ display: "flex", height: "100vh", backgroundColor: colors.background }}>
@@ -95,6 +97,7 @@ export const Activity = () => {
 					<Route path="/stockpiles" element={<StockpilesPage />} />
 					<Route path="/stockpiles/view" element={<StockpileViewPage />} />
 					<Route path="/orders" element={<Orders />} />
+					<Route path="/artillery" element={<ArtilleryPage />} />
 					<Route path="/gps" element={<GPS />} />
 					<Route path="*" element={<StockpilesPage />} />
 				</Routes>

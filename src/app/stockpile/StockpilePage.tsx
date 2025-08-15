@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { Stockpile, StockpileManager } from '../../app/objects/Stockpile';
-import { RegionDrawer } from './StockpileSidebar';
+import { RegionDrawer } from '../RegionSidebar';
 import { StockpileList } from './StockpileList';
 import { CreateStockpileDialog } from './StockpileCreateDialog';
 
