@@ -9,9 +9,10 @@ interface Point {
 interface RegionMapProps {
     region: string;
     onMeasure?: (data: { distance: number; azimuth: number }) => void;
+    selectedGun?: { mindistance: number; maxdistance: number } | null;
 }
 
-export const RegionMap = ({ region, onMeasure }: RegionMapProps) => {
+export const RegionMap = ({ region, onMeasure, selectedGun }: RegionMapProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const [points, setPoints] = useState<Point[]>([]);
@@ -175,7 +176,7 @@ export const RegionMap = ({ region, onMeasure }: RegionMapProps) => {
                 ))}
             </Box>
 
-            {/* Line */}
+            {/* Line between points */}
             {points.length === 2 && (
                 <svg
                     width="100%"
@@ -195,6 +196,41 @@ export const RegionMap = ({ region, onMeasure }: RegionMapProps) => {
                         y2={points[1].y}
                         stroke="yellow"
                         strokeWidth={2}
+                    />
+                </svg>
+            )}
+
+            {/* Artillery range circles */}
+            {selectedGun && points.length >= 1 && (
+                <svg
+                    width="100%"
+                    height="100%"
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        pointerEvents: "none",
+                        transform: `translate(${offset.x}px, ${offset.y}px)`,
+                    }}
+                >
+                    {/* Max range - solid green */}
+                    <circle
+                        cx={points[0].x}
+                        cy={points[0].y}
+                        r={selectedGun.maxdistance * pixelToMeter}
+                        stroke="lime"
+                        strokeWidth={2}
+                        fill="none"
+                    />
+                    {/* Min range - dashed green */}
+                    <circle
+                        cx={points[0].x}
+                        cy={points[0].y}
+                        r={selectedGun.mindistance * pixelToMeter}
+                        stroke="lime"
+                        strokeWidth={2}
+                        fill="none"
+                        strokeDasharray="6,4"
                     />
                 </svg>
             )}

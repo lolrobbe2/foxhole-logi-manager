@@ -1,14 +1,16 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { RegionDrawer } from "../RegionSidebar";
+import { GunDrawer } from "./GunDrawer";
 import { RegionMap } from "./RegionMap";
+import { ArtilleryGun } from "./artilleryGuns";
 
 export const ArtilleryPage = () => {
     const [regions, setRegions] = useState<string[]>([]);
     const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [selectedGun, setSelectedGun] = useState<ArtilleryGun | null>(null);
 
-    // Measurement state
     const [measurement, setMeasurement] = useState<{ distance: number; azimuth: number } | null>(null);
 
     useEffect(() => {
@@ -42,17 +44,18 @@ export const ArtilleryPage = () => {
                     position: "relative",
                 }}
             >
-
-                {/* Map */}
                 {selectedRegion && (
                     <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <RegionMap
                             region={selectedRegion}
                             onMeasure={(data) => setMeasurement(data)}
+                            selectedGun={selectedGun}
                         />
                     </Box>
                 )}
             </Box>
+
+            <GunDrawer selectedGun={selectedGun} onSelectGun={setSelectedGun} />
         </Box>
     );
 };
