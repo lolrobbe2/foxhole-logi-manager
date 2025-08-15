@@ -60,7 +60,7 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
         if (level !== undefined) {
             const windStrength = level * WIND_DEVIATION;
             const windWithStrength = { direction: wind.direction, strength: windStrength };
-            ({ distance: distanceWithWind, azimuth: azimuthWithWind } = applyWind(distance, azimuth, windWithStrength));
+            ({ distance: distanceWithWind, azimuth: azimuthWithWind } = compensateWind(distance, azimuth, windWithStrength));
         }
 
         const newMeasurement = { distance, azimuth, distanceWithWind, azimuthWithWind };
@@ -294,17 +294,16 @@ function calculateDistanceAndAzimuth(p1: Point, p2: Point, pixelToMeter: number)
     return { distance, azimuth: normalizedAzimuth };
 }
 
-// Apply wind to distance and azimuth
-function applyWind(distance: number, azimuth: number, wind: Wind) {
-    // Simple vector addition (wind deviation in meters along wind direction)
-    const azRad = (azimuth * Math.PI) / 180;
+// Wind compensation: inverts wind effect so displayed distance/azimuth include wind
+function compensateWind(targetDistance: number, targetAzimuth: number, wind: Wind) {
+    const azRad = (targetAzimuth * Math.PI) / 180;
     const windRad = (wind.direction * Math.PI) / 180;
 
-    const dx = distance * Math.sin(azRad) + wind.strength * Math.sin(windRad);
-    const dy = distance * Math.cos(azRad) + wind.strength * Math.cos(windRad);
+    const dx = targetDistance * Math.sin(azRad) - wind.strength * Math.sin(windRad);
+    const dy = targetDistance * Math.cos(azRad) - wind.strength * Math.cos(windRad);
 
-    const newDistance = Math.sqrt(dx * dx + dy * dy);
-    const newAzimuth = (Math.atan2(dx, dy) * 180) / Math.PI;
+    const compensatedDistance = Math.sqrt(dx * dx + dy * dy);
+    const compensatedAzimuth = (Math.atan2(dx, dy) * 180) / Math.PI;
 
-    return { distance: newDistance, azimuth: (newAzimuth + 360) % 360 };
+    return { distance: compensatedDistance, azimuth: (compensatedAzimuth + 360) % 360 };
 }
