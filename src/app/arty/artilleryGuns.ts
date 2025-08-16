@@ -14,7 +14,7 @@ export const artilleryGuns: ArtilleryGun[] = [
 		windDeviation: [12.5, 15.0, 20.0, 35.0, 45.0],
 		faction: 'Colonials',
 		maxdistance: 250,
-		mindistance: 100
+		mindistance: 100,
 	},
 	{
 		name: '50-500 “Thunderbolt” Cannon',
