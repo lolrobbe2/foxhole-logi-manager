@@ -4,7 +4,7 @@ export const GPS = () => {
     return (
         <Box sx={{ height: "100%", width: "100%" }}>
             <iframe
-                src="https://www.logiwaze.com/"
+                src="/api/proxy"
                 title="Logiwaze GPS"
                 style={{
                     width: "100%",
