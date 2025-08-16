@@ -1,6 +1,7 @@
 import { Box } from '@mui/material'
 import { MouseEvent, WheelEvent, useEffect, useRef, useState } from 'react'
 import { WindDial } from './WindDirectionControl'
+import { ArtilleryGun } from './artilleryGuns'
 
 interface Point {
 	x: number
@@ -10,8 +11,8 @@ interface Point {
 interface SelectedGun {
 	mindistance: number
 	maxdistance: number
-	dispersion: number[]
-	windDeviation: number
+	dispersion: [number, number]
+	windDeviation: number[]
 }
 
 interface Wind {
@@ -69,7 +70,7 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 		let azimuthWithWind: number | null
 
 		if (level !== null && selectedGun != null) {
-			const windStrength = level * selectedGun?.windDeviation
+			const windStrength = selectedGun?.windDeviation[level! - 1]
 			const windWithStrength = { direction: wind.direction, strength: windStrength }
 			;({ distance: distanceWithWind, azimuth: azimuthWithWind } = compensateWind(distance, azimuth, windWithStrength))
 		}
@@ -124,7 +125,6 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 
 	// Zooming
 	const handleWheel = (e: WheelEvent) => {
-		e.preventDefault()
 		const img = imageRef.current
 		const container = containerRef.current
 		if (!img || !container) return
@@ -215,6 +215,18 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 						>
 							{' '}
 							| With Wind: {measurement.distanceWithWind.toFixed(1)} m @ {measurement.azimuthWithWind.toFixed(1)}°
+							{selectedGun && (
+								<>
+									{' '}
+									| Dispersion:{' '}
+									{getDispersionAtDistance(
+										selectedGun.dispersion,
+										measurement.distanceWithWind,
+										selectedGun.mindistance,
+										selectedGun.maxdistance
+									).toFixed(2)}
+								</>
+							)}
 						</Box>
 					)}
 				</Box>
@@ -315,20 +327,23 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 							/>
 
 							{/* Dispersion */}
-							{selectedGun.dispersion && points.length > 1 && (
-								<Box
-									sx={{
-										position: 'absolute',
-										left: `${points[1].x}px`,
-										top: `${points[1].y}px`,
-										width: `${selectedGun.dispersion[level! - 1] * 2}px`,
-										height: `${selectedGun.dispersion[level! - 1] * 2}px`,
-										border: '2px dashed orange',
-										borderRadius: '50%',
-										transform: 'translate(-50%, -50%)'
-									}}
-								/>
-							)}
+							{selectedGun.dispersion &&
+								points.length > 1 &&
+								measurement != null &&
+								measurement!.distanceWithWind !== null && (
+									<Box
+										sx={{
+											position: 'absolute',
+											left: `${points[1].x}px`,
+											top: `${points[1].y}px`,
+											width: `${getDispersionAtDistance(selectedGun.dispersion, measurement!.distanceWithWind!, selectedGun.mindistance, selectedGun.maxdistance) * 2}px`,
+											height: `${getDispersionAtDistance(selectedGun.dispersion, measurement!.distanceWithWind!, selectedGun.mindistance, selectedGun.maxdistance) * 2}px`,
+											border: '2px dashed orange',
+											borderRadius: '50%',
+											transform: 'translate(-50%, -50%)'
+										}}
+									/>
+								)}
 						</>
 					)}
 
@@ -377,4 +392,19 @@ function compensateWind(targetDistance: number, targetAzimuth: number, wind: Win
 	const compensatedAzimuth = (Math.atan2(dx, dy) * 180) / Math.PI
 
 	return { distance: compensatedDistance, azimuth: (compensatedAzimuth + 360) % 360 }
+}
+
+function getDispersionAtDistance(
+	dispersion: [number, number],
+	distance: number,
+	mindistance: number,
+	maxdistance: number
+): number {
+	const [dispMin, dispMax] = dispersion
+
+	if (distance <= mindistance) return dispMin
+	if (distance >= maxdistance) return dispMax
+
+	const t = (distance - mindistance) / (maxdistance - mindistance)
+	return dispMin + t * (dispMax - dispMin)
 }
