@@ -70,7 +70,7 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 		let azimuthWithWind: number | null
 
 		if (level !== null && selectedGun != null) {
-			const windStrength = selectedGun?.windDeviation[level! - 1]
+			const windStrength = selectedGun?.windDeviation[level!]
 			const windWithStrength = { direction: wind.direction, strength: windStrength }
 			;({ distance: distanceWithWind, azimuth: azimuthWithWind } = compensateWind(distance, azimuth, windWithStrength))
 		}
@@ -385,8 +385,9 @@ function compensateWind(targetDistance: number, targetAzimuth: number, wind: Win
 	const azRad = (targetAzimuth * Math.PI) / 180
 	const windRad = (wind.direction * Math.PI) / 180
 
-	const dx = targetDistance * Math.sin(azRad) - wind.strength * Math.sin(windRad)
-	const dy = targetDistance * Math.cos(azRad) - wind.strength * Math.cos(windRad)
+   const dx = targetDistance * Math.sin(azRad) + wind.strength * Math.sin(windRad);
+    const dy = targetDistance * Math.cos(azRad) + wind.strength * Math.cos(windRad);
+
 
 	const compensatedDistance = Math.sqrt(dx * dx + dy * dy)
 	const compensatedAzimuth = (Math.atan2(dx, dy) * 180) / Math.PI

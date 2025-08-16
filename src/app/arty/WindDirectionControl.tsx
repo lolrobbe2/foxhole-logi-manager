@@ -3,14 +3,15 @@ import { useState } from "react";
 
 const compassPoints: { label: string; angle: number }[] = [
     { label: "N", angle: 0 },
-    { label: "NE", angle: 45 },
-    { label: "E", angle: 90 },
-    { label: "SE", angle: 135 },
+    { label: "NE", angle: 315 },
+    { label: "E", angle: 270 },
+    { label: "SE", angle: 225 },
     { label: "S", angle: 180 },
-    { label: "SW", angle: 225 },
-    { label: "W", angle: 270 },
-    { label: "NW", angle: 315 },
+    { label: "SW", angle: 135 },
+    { label: "W", angle: 90 },
+    { label: "NW", angle: 45 },
 ];
+
 interface WindDialProps {
     onChange?: (direction: number) => void; // 0–359°
     size?: number; // in rem
