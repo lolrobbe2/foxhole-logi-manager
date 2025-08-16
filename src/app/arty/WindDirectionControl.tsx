@@ -1,15 +1,15 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
 
-const compassPoints: { label: string; angle: number }[] = [
-    { label: "N", angle: 0 },
-    { label: "NE", angle: 315 },
-    { label: "E", angle: 270 },
-    { label: "SE", angle: 225 },
-    { label: "S", angle: 180 },
-    { label: "SW", angle: 135 },
-    { label: "W", angle: 90 },
-    { label: "NW", angle: 45 },
+const compassPoints: { label: string; angle: number, renderAngle: number }[] = [
+    { label: "N", angle: 0 , renderAngle: 0},
+    { label: "NE", angle: 315 ,renderAngle: 45},
+    { label: "E", angle: 270 ,renderAngle: 90},
+    { label: "SE", angle: 225 ,renderAngle:135},
+    { label: "S", angle: 180 ,renderAngle: 180},
+    { label: "SW", angle: 135 ,renderAngle: 225},
+    { label: "W", angle: 90 ,renderAngle: 270},
+    { label: "NW", angle: 45 ,renderAngle: 315},
 ];
 
 interface WindDialProps {
@@ -49,7 +49,7 @@ export const WindDial = ({
             }}
         >
             {compassPoints.map((point) => {
-                const rad = (point.angle - 90) * (Math.PI / 180);
+                const rad = (point.renderAngle - 90) * (Math.PI / 180);
                 const r = size * 0.35;
                 const x = r * Math.cos(rad);
                 const y = r * Math.sin(rad);
@@ -92,7 +92,7 @@ export const WindDial = ({
                     height: `${size * 0.3}rem`,
                     bgcolor: "lime",
                     transformOrigin: "bottom center",
-                    transform: `translate(-50%, -50%) rotate(${direction}deg)`,
+                    transform: `translate(-50%, -50%) rotate(${360 - direction}deg)`,
                     borderRadius: "0.125rem",
                 }}
             />
