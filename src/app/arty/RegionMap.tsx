@@ -10,7 +10,7 @@ interface Point {
 interface SelectedGun {
 	mindistance: number
 	maxdistance: number
-	dispersion: number
+	dispersion: number[]
 	windDeviation: number
 }
 
@@ -161,8 +161,15 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 
 		const clickX = (e.clientX - rect.left - offset.x) / scale
 		const clickY = (e.clientY - rect.top - offset.y) / scale
-
-		setPoints((prev) => (prev.length >= 2 ? [{ x: clickX, y: clickY }] : [...prev, { x: clickX, y: clickY }]))
+		if (e.ctrlKey && points.length > 1) {
+			setPoints((prev) => {
+				const updated = [...prev]
+				updated[1] = { x: clickX, y: clickY }
+				return updated
+			})
+		} else {
+			setPoints((prev) => (prev.length >= 2 ? [{ x: clickX, y: clickY }] : [...prev, { x: clickX, y: clickY }]))
+		}
 	}
 
 	return (
@@ -200,10 +207,15 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 				>
 					Distance: {measurement.distance.toFixed(1)} m | Azimuth: {measurement.azimuth.toFixed(1)}°
 					{measurement.distanceWithWind !== undefined && measurement.azimuthWithWind !== undefined && (
-						<>
+						<Box
+							component="span"
+							sx={{
+								color: selectedGun && measurement.distanceWithWind > selectedGun.maxdistance ? 'orange' : 'lightgreen'
+							}}
+						>
 							{' '}
 							| With Wind: {measurement.distanceWithWind.toFixed(1)} m @ {measurement.azimuthWithWind.toFixed(1)}°
-						</>
+						</Box>
 					)}
 				</Box>
 			)}
@@ -309,8 +321,8 @@ export const RegionMap = ({ region, onMeasure, selectedGun, level }: RegionMapPr
 										position: 'absolute',
 										left: `${points[1].x}px`,
 										top: `${points[1].y}px`,
-										width: `${selectedGun.dispersion * 2}px`,
-										height: `${selectedGun.dispersion * 2}px`,
+										width: `${selectedGun.dispersion[level! - 1] * 2}px`,
+										height: `${selectedGun.dispersion[level! - 1] * 2}px`,
 										border: '2px dashed orange',
 										borderRadius: '50%',
 										transform: 'translate(-50%, -50%)'
