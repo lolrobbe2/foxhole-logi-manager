@@ -55,7 +55,6 @@ const Sidebar = () => (
 		<List>
 			<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
 			<SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />
-			<SidebarLink to="/gps" label="GPS" highlightColor={colors.highlight} />
 			<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />
 		</List>
 	</Drawer>
@@ -98,7 +97,6 @@ export const Activity = () => {
 					<Route path="/stockpiles/view" element={<StockpileViewPage />} />
 					<Route path="/orders" element={<Orders />} />
 					<Route path="/artillery" element={<ArtilleryPage />} />
-					<Route path="/gps" element={<GPS />} />
 					<Route path="*" element={<StockpilesPage />} />
 				</Routes>
 			</Box>
