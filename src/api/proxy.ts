@@ -1,42 +1,72 @@
-import type { RoboRequest } from '@robojs/server';
+import type { RoboRequest } from '@robojs/server'
 
 export default async (req: RoboRequest) => {
-    const TARGET = 'https://www.logiwaze.com/';
-    console.log(req.url)
-    // Handle the root HTML request
-    if (req.url.endsWith('/api/proxy')) {
-        try {
-            const response = await fetch(TARGET);
-            let html = await response.text();
+	const urlParam = new URL(req.url, 'http://logiwaze.com  ').searchParams.get('url')
+	if (!urlParam) {
+		return new Response('Missing "url" query parameter', { status: 400 })
+	}
 
-            // Rewrite all URLs to go through the proxy
-            html = html
-                .replace(/(href|src|srcset)=["']\/?/g, `$1="/api/proxy/`)
-                .replace(/https:\/\/www\.logiwaze\.com\//g, '/api/proxy/');
+	console.log('Proxying to:', urlParam)
 
-            return new Response(html, {
-                status: 200,
-                headers: {
-                    'Content-Type': 'text/html; charset=utf-8'
-                }
-            });
-        } catch (err) {
-            return new Response('Error fetching target site', { status: 500 });
-        }
-    }
+	// Handle root HTML fetch & rewrite
 
-    // For other /proxy/* requests, just forward them
-    const targetUrl = TARGET + req.url.replace(/^\/proxy/, '');
-    const proxiedResponse = await fetch(targetUrl, {
-        method: req.method,
-        headers: req.headers as any,
-        body: req.body
-    });
+	// Forward other requests
+	try {
+		if (urlParam.endsWith('.js')) req.headers.set('Content-Type', 'application/javascript')
+		if (urlParam.endsWith('.css')) req.headers.set('Content-Type', 'text/css')
+		if (urlParam.endsWith('.json')) req.headers.set('Content-Type', 'application/json')
+		if (urlParam.endsWith('.webmanifest')) req.headers.set('Content-Type', 'application/manifest+json')
+		if (urlParam.endsWith('.wasm')) req.headers.set('Content-Type', 'application/wasm')
+		if (urlParam.endsWith('.webp')) req.headers.set('Content-Type', 'image/webp')
+		else {
+			if (req.url.includes('/api/proxy')) {
+				try {
+					const response = await fetch(urlParam)
+					let html = await response.text()
 
-    // Clone headers
-    const headers = new Headers(proxiedResponse.headers);
-    return new Response(proxiedResponse.body, {
-        status: proxiedResponse.status,
-        headers
-    });
-};
+					// Only rewrite relative URLs (starting with / or no scheme)
+					html = html.replace(/(href|src|srcset)=["'](\/[^"']*)["']/g, (_, attr, path) => {
+						return `${attr}="/api/proxy?url=${new URL(path, urlParam).toString()}"`
+					})
+					html = html.replace(/(["'`])(Tiles\/[^"'`]+)\1/g, (_, q, path) => {
+						return `${q}/api/proxy?url=${urlParam}${path}${q}`
+					})
+					return new Response(html, {
+						status: 200,
+						headers: {
+							'Content-Type': 'text/html; charset=utf-8'
+						}
+					})
+				} catch (err) {}
+			}
+		}
+		const proxiedResponse = await fetch(urlParam, {
+			method: req.method,
+			headers: req.headers as any,
+			body: req.body
+		})
+		const contentType = proxiedResponse.headers.get('content-type') || ''
+
+		if (contentType.includes('javascript')) {
+			console.log('test')
+			const js = await proxiedResponse.text()
+			let body: BodyInit = proxiedResponse.body!
+			const headers = new Headers(proxiedResponse.headers)
+			body = js.replace(/(["'`])(Tiles\/[^"'`]+)\1/g, (_, q, path) => {
+				return `${q}/api/proxy?url=${path}${q}`
+			})
+			headers.set('Content-Type', 'application/javascript')
+			return new Response(body, {
+				status: proxiedResponse.status,
+				headers
+			})
+		}
+		const headers = new Headers(proxiedResponse.headers)
+		return new Response(proxiedResponse.body, {
+			status: proxiedResponse.status,
+			headers
+		})
+	} catch (err) {
+		return new Response('Error forwarding request', { status: 500 })
+	}
+}

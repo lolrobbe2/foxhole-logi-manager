@@ -1,7 +1,6 @@
-import { RoboResponse } from '@robojs/server'
+import { BaseEngine, RoboResponse } from '@robojs/server'
 import { logger } from 'robo.js'
 import type { RoboRequest } from '@robojs/server'
-
 interface RequestBody {
 	code: string
 }
