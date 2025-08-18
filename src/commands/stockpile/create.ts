@@ -1,6 +1,7 @@
 import { createCommandConfig, logger } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import { StockpileManager } from '../../data/stockpile'
+logger.info('registered create stockpile command')
 
 function isValidCode(code: string): boolean {
   return /^\d{6}$/.test(code)

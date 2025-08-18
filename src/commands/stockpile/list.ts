@@ -2,6 +2,8 @@ import { createCommandConfig, logger } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import { StockpileManager } from '../../data/stockpile'
 
+logger.info('registered list stockpiles command')
+
 /*
  * Customize your command details and options here.
  *
@@ -29,14 +31,24 @@ export const config = createCommandConfig({
  */
 export default async (interaction: ChatInputCommandInteraction) => {
 	logger.info(`list command used by ${interaction.user}`)
-    const region = interaction.options.getString('region', false)
-    if (region !== null) {
-       const stockpiles = await StockpileManager.getStockpilesByRegion(region);
-            const list = stockpiles
-        .map(s => `${s.name}`)
-        .join('\n')
 
-        const response = `Stockpiles in region **${region}**:\n${list}`.slice(0, 1900)
-        interaction.reply(response);
-    }
+	const region = interaction.options.getString('region', false)
+
+	if (region !== null) {
+		const stockpiles = await StockpileManager.getStockpilesByRegion(region)
+
+		const list = stockpiles.map((s) => `${s.name}`).join('\n')
+
+		const response = `Stockpiles in region **${region}**:\n${list}`.slice(0, 1900)
+
+		await interaction.reply(response)
+	} else {
+		const stockpiles = await StockpileManager.getStockpiles()
+
+		const list = stockpiles.map((s) => `${s.name}`).join('\n')
+
+		const response = `All stockpiles:\n${list}`.slice(0, 1900)
+
+		await interaction.reply(response)
+	}
 }

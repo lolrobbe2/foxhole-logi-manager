@@ -183,7 +183,6 @@ export function useDiscordSdkSetup(options?: UseDiscordSdkSetupOptions) {
 		try {
 			setStatus('loading')
 			await discordSdk.ready()
-
 			if (authenticate) {
 				setStatus('authenticating')
 				const { accessToken, auth } = await authenticateSdk({ scope })
