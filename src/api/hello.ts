@@ -1,3 +1,4 @@
+import { client } from "robo.js"
 import FoxholeApi from "../data/foxhole/api"
 
 /**
@@ -11,5 +12,6 @@ import FoxholeApi from "../data/foxhole/api"
  * https://robojs.dev/plugins/server
  */
 export default async () => {
+	
 	return await FoxholeApi.getStaticMapData("DeadLandsHex")
 }

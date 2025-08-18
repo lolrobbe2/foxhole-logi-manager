@@ -53,7 +53,7 @@ if (isEmbedded) {
 	})
 }
 
-export { discordSdk }
+export { discordSdk, type SdkSetupResult }
 
 enum SessionStorageQueryParam {
 	user_id = 'user_id',
@@ -118,7 +118,9 @@ export function DiscordContextProvider(props: DiscordContextProviderProps) {
 	if (loadingScreen && !['error', 'ready'].includes(setupResult.status)) {
 		return <>{loadingScreen}</>
 	}
-	DiscordService.setSdk(discordSdk);
+	DiscordService.setSdk(discordSdk)
+	DiscordService.setContext(setupResult)
+
 	return <DiscordContext.Provider value={setupResult}>{children}</DiscordContext.Provider>
 }
 
