@@ -1,0 +1,19 @@
+// config/vite.mjs
+import { DiscordProxy } from "file:///C:/Users/robbe/Documents/DEV/foxhole-logi-manager/node_modules/@robojs/patch/.robo/build/index.js";
+import react from "file:///C:/Users/robbe/Documents/DEV/foxhole-logi-manager/node_modules/@vitejs/plugin-react-swc/index.js";
+import { defineConfig } from "file:///C:/Users/robbe/Documents/DEV/foxhole-logi-manager/node_modules/vite/dist/node/index.js";
+var vite_default = defineConfig(({ mode }) => ({
+  plugins: [react(), DiscordProxy.Vite()],
+  server: {
+    host: "0.0.0.0",
+    allowedHosts: true,
+    fs: {
+      strict: false
+    },
+    historyApiFallback: true
+  }
+}));
+export {
+  vite_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiY29uZmlnL3ZpdGUubWpzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyJjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfZGlybmFtZSA9IFwiQzpcXFxcVXNlcnNcXFxccm9iYmVcXFxcRG9jdW1lbnRzXFxcXERFVlxcXFxmb3hob2xlLWxvZ2ktbWFuYWdlclxcXFxjb25maWdcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfZmlsZW5hbWUgPSBcIkM6XFxcXFVzZXJzXFxcXHJvYmJlXFxcXERvY3VtZW50c1xcXFxERVZcXFxcZm94aG9sZS1sb2dpLW1hbmFnZXJcXFxcY29uZmlnXFxcXHZpdGUubWpzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9DOi9Vc2Vycy9yb2JiZS9Eb2N1bWVudHMvREVWL2ZveGhvbGUtbG9naS1tYW5hZ2VyL2NvbmZpZy92aXRlLm1qc1wiO2ltcG9ydCB7IERpc2NvcmRQcm94eSB9IGZyb20gJ0Byb2JvanMvcGF0Y2gnXG5pbXBvcnQgcmVhY3QgZnJvbSAnQHZpdGVqcy9wbHVnaW4tcmVhY3Qtc3djJ1xuaW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZSdcblxuLy8gaHR0cHM6Ly92aXRlanMuZGV2L2NvbmZpZy9cbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZygoeyBtb2RlIH0pID0+ICh7XG5cdHBsdWdpbnM6IFtyZWFjdCgpLCBEaXNjb3JkUHJveHkuVml0ZSgpXSxcblx0c2VydmVyOiB7XG5cdFx0aG9zdDogJzAuMC4wLjAnLFxuXHRcdGFsbG93ZWRIb3N0czogdHJ1ZSxcblx0XHRmczoge1xuXHRcdFx0c3RyaWN0OiBmYWxzZSxcblx0XHR9LFxuXHRcdGhpc3RvcnlBcGlGYWxsYmFjazogdHJ1ZSxcblx0fSxcbn0pKVxuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUE0VixTQUFTLG9CQUFvQjtBQUN6WCxPQUFPLFdBQVc7QUFDbEIsU0FBUyxvQkFBb0I7QUFHN0IsSUFBTyxlQUFRLGFBQWEsQ0FBQyxFQUFFLEtBQUssT0FBTztBQUFBLEVBQzFDLFNBQVMsQ0FBQyxNQUFNLEdBQUcsYUFBYSxLQUFLLENBQUM7QUFBQSxFQUN0QyxRQUFRO0FBQUEsSUFDUCxNQUFNO0FBQUEsSUFDTixjQUFjO0FBQUEsSUFDZCxJQUFJO0FBQUEsTUFDSCxRQUFRO0FBQUEsSUFDVDtBQUFBLElBQ0Esb0JBQW9CO0FBQUEsRUFDckI7QUFDRCxFQUFFOyIsCiAgIm5hbWVzIjogW10KfQo=

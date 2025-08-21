@@ -1,6 +1,6 @@
 import { RoboRequest, RoboResponse } from '@robojs/server'
 import { OrderManager, OrderType, ProductionSubtype, TransportSubtype, OrderItem } from '../../data/orders'
-import BotService from '../../data/BotService' // import your auto-initializing bot
+import BotService from '../../data/BotService'
 
 export default async (req: RoboRequest) => {
 	try {
@@ -20,6 +20,7 @@ export default async (req: RoboRequest) => {
 		const destination = body.destination as string
 		const items = body.items as OrderItem[]
 		const createdBy = body.createdBy as string
+		const source = body.source as string
 		// User info (who creates the order)
 
 		if (name === null || type === null || subtype === null || destination === null || items === null) {
@@ -37,7 +38,7 @@ export default async (req: RoboRequest) => {
 			orderType = OrderType.Production
 			orderSubtype = subtype as ProductionSubtype
 		} else if (type === OrderType.Transport) {
-			if (!Object.values(TransportSubtype).includes(subtype as TransportSubtype)) {
+			if (!Object.values(TransportSubtype).includes(subtype as TransportSubtype) && !source) {
 				return RoboResponse.json({ error: `Invalid transport subtype: ${subtype}` })
 			}
 			orderType = OrderType.Transport
@@ -53,7 +54,8 @@ export default async (req: RoboRequest) => {
 			subtype: orderSubtype,
 			destination,
 			items,
-			createdBy: createdBy
+			createdBy: createdBy,
+			source: source
 		})
 
 		await notifyOrderCreated('logistics', name, createdBy, type)

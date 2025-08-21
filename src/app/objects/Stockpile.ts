@@ -85,7 +85,7 @@ export class StockpileManager {
 	 */
 	public static async getStockpilesByRegion(region: string): Promise<Stockpile[]> {
 		// build the URL with optional query param
-		let url = 'api/stockpile/get'
+		let url = '/api/stockpile/get'
 		if (region) {
 			url += `?region=${encodeURIComponent(region)}`
 		}
@@ -103,7 +103,7 @@ export class StockpileManager {
 
 	public static async getStockpileByEncodedName(encodedName: string): Promise<Stockpile | undefined> {
 		// build the URL with optional query param
-		let url = 'api/stockpile/getencoded'
+		let url = '/api/stockpile/getencoded'
 		if (encodedName) {
 			url += `?encodedname=${encodeURIComponent(encodedName)}`
 		}
@@ -126,7 +126,7 @@ export class StockpileManager {
 	 */
 	public static async getAllRegions(): Promise<string[]> {
 		try {
-			const response = await fetch('api/stockpile/getregions')
+			const response = await fetch('/api/stockpile/getregions')
 
 			if (!response.ok) {
 				throw new Error(`Failed to fetch regions: ${response.status} ${response.statusText}`)

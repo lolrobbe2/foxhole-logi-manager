@@ -1,5 +1,4 @@
 import FirestoreCollection from './collection'
-import FirestoreDocument from './FirestoreDocument'
 import { StockpileManager } from './stockpile'
 
 // Main order types
@@ -29,96 +28,154 @@ export interface OrderItem {
 }
 // --- Updated Order type ---
 export type Order =
-  | {
-      name: string
-      type: OrderType.Production
-      subtype: ProductionSubtype
-      destination: string // combined stockpile name: region_subregion_name
-      items: OrderItem[]
-      status: 'Created' | 'Reserved' | 'Completed'
-      createdBy: string // username or Discord tag
-      takenBy?: string // optional: who reserved/took the order
-    }
-  | {
-      name: string
-      type: OrderType.Transport
-      subtype: TransportSubtype
-      source: string // combined stockpile name: region_subregion_name
-      destination: string
-      items: OrderItem[]
-      status: 'Created' | 'Reserved' | 'Completed'
-      createdBy: string
-      takenBy?: string
-    }
+	| {
+			name: string
+			type: OrderType.Production
+			subtype: ProductionSubtype
+			destination: string // combined stockpile name: region_subregion_name
+			items: OrderItem[]
+			status: 'Created' | 'Reserved' | 'Completed'
+			createdBy: string // username or Discord tag
+			takenBy?: string // optional: who reserved/took the order
+	  }
+	| {
+			name: string
+			type: OrderType.Transport
+			subtype: TransportSubtype
+			source: string // combined stockpile name: region_subregion_name
+			destination: string
+			items: OrderItem[]
+			status: 'Created' | 'Reserved' | 'Completed'
+			createdBy: string
+			takenBy?: string
+	  }
 
-// --- Updated OrderManager methods ---
+/**
+ * this class handles all the created orders and order management.
+ * Such as reserving an order for a player and completing an order for a player.
+ */
 export class OrderManager {
-  private static orderCollection = new FirestoreCollection<Order>('orders')
+	private static orderCollection = new FirestoreCollection<Order>('orders')
 
-  public static async createOrder(order: Omit<Order, 'status' | 'takenBy'> & { createdBy: string }): Promise<void> {
-    const docRef = this.orderCollection.doc(order.name)
+	public static async createOrder(order: Omit<Order, 'status' | 'takenBy'> & { createdBy: string }): Promise<void> {
+		const docRef = this.orderCollection.doc(order.name)
 
-    const existing = await docRef.get()
-    if (existing) {
-      throw new Error(`Order "${order.name}" already exists.`)
-    }
+		const existing = await docRef.get()
+		if (existing) {
+			throw new Error(`Order "${order.name}" already exists.`)
+		}
 
-    const newOrder: Order = {
-      ...order,
-      items: order.items ?? [],
-      status: 'Created'
-    }
+		const newOrder: Order = {
+			...order,
+			items: order.items ?? [],
+			status: 'Created'
+		}
 
-    await docRef.set(newOrder)
-  }
+		await docRef.set(newOrder)
+	}
 
-  public static async reserveItem(orderName: string, itemName: string, count: number, username: string): Promise<void> {
-    const docRef = this.orderCollection.doc(orderName)
-    const order = await docRef.get()
+	/**
+	 * this function reserves an order for a user.
+	 * @param orderName the name of the order to be reserved
+	 * @param username the username of the person reserving the order.
+	 */
+	public static async reserveOrder(orderName: string, username: string): Promise<Order | null> {
+		const docRef = this.orderCollection.doc(orderName)
+		const order = await docRef.get()
 
-    if (!order) {
-      throw new Error(`Order "${orderName}" not found.`)
-    }
+		if (!order) {
+			throw new Error(`Order "${orderName}" not found.`)
+		}
+		if (order.status !== 'Created') {
+			return null
+		}
 
-    const updatedItems = [...order.items]
-    const existingIndex = updatedItems.findIndex((i) => i.name === itemName)
+		const updatedItems = [...order.items]
+		await docRef.set({ ...order, items: updatedItems, status: 'Reserved', takenBy: username })
+    return order;
+	}
 
-    if (existingIndex >= 0) {
-      updatedItems[existingIndex].count += count
-    } else {
-      updatedItems.push({ name: itemName, count })
-    }
+	/**
+	 * This function unreserve's an order, resetting its status to 'Created'.
+	 * @param orderName the name of the order to be unreserved
+	 */
+	public static async unreserveOrder(orderName: string): Promise<void> {
+		const docRef = this.orderCollection.doc(orderName)
+		const order = await docRef.get()
 
-    await docRef.set({ ...order, items: updatedItems, status: 'Reserved', takenBy: username })
-  }
+		if (!order) {
+			throw new Error(`Order "${orderName}" not found.`)
+		}
 
-  public static async completeOrder(orderName: string): Promise<void> {
-    const docRef = this.orderCollection.doc(orderName)
-    const order = await docRef.get()
+		// Only unreserve if it's currently reserved
+		if (order.status !== 'Reserved') {
+			return
+		}
 
-    if (!order) {
-      throw new Error(`Order "${orderName}" not found.`)
-    }
+		const updatedItems = [...order.items]
+		await docRef.set({ ...order, items: updatedItems, status: 'Created', takenBy: undefined })
+	}
 
-    if (order.status === 'Completed') {
-      throw new Error(`Order "${orderName}" is already completed.`)
-    }
+	/**
+	 * this function marks an order as completed
+	 * @param orderName the name of the order to complete
+	 */
+	public static async completeOrder(orderName: string): Promise<Order> {
+		const docRef = this.orderCollection.doc(orderName)
+		const order = await docRef.get()
 
-    if (order.type === OrderType.Production) {
-      const [region, subregion, stockpileName] = order.destination.split('_')
-      for (const item of order.items) {
-        await StockpileManager.addItem(region, subregion, stockpileName, item.name, item.count)
-      }
-    } else if (order.type === OrderType.Transport) {
-      const [sourceRegion, sourceSubregion, sourceStockpile] = order.source.split('_')
-      const [destRegion, destSubregion, destStockpile] = order.destination.split('_')
+		if (!order) {
+			throw new Error(`Order "${orderName}" not found.`)
+		}
 
-      for (const item of order.items) {
-        await StockpileManager.removeItem(sourceRegion, sourceSubregion, sourceStockpile, item.name, item.count)
-        await StockpileManager.addItem(destRegion, destSubregion, destStockpile, item.name, item.count)
-      }
-    }
+		if (order.status === 'Completed') {
+			throw new Error(`Order "${orderName}" is already completed.`)
+		}
 
-    await docRef.set({ ...order, status: 'Completed' })
-  }
+		if (order.type === OrderType.Production) {
+			const [region, subregion, stockpileName] = order.destination.split('_')
+			for (const item of order.items) {
+				await StockpileManager.addItem(region, subregion, stockpileName, item.name, item.count)
+			}
+		} else if (order.type === OrderType.Transport) {
+			const [sourceRegion, sourceSubregion, sourceStockpile] = order.source.split('_')
+			const [destRegion, destSubregion, destStockpile] = order.destination.split('_')
+
+			for (const item of order.items) {
+				await StockpileManager.removeItem(sourceRegion, sourceSubregion, sourceStockpile, item.name, item.count)
+				await StockpileManager.addItem(destRegion, destSubregion, destStockpile, item.name, item.count)
+			}
+		}
+
+		await docRef.set({ ...order, status: 'Completed' })
+    return order;
+	}
+
+	public static async getOrders(): Promise<Order[]> {
+		const docRefs = await this.orderCollection.getDocs()
+		const orders: Order[] = []
+
+		for (const doc of docRefs) {
+			const data = await doc.get()
+			if (data) {
+				orders.push(data)
+			}
+		}
+
+		return orders
+	}
+
+	public static async getReservedOrdersByName(name: string): Promise<Order[]> {
+		const docRefs = await this.orderCollection.getDocs()
+		const reservedOrders: Order[] = []
+
+		for (const doc of docRefs) {
+			const data = await doc.get()
+			if (data && data.status === 'Reserved' && data.name === name) {
+				reservedOrders.push(data)
+			}
+		}
+
+		return reservedOrders
+	}
 }
