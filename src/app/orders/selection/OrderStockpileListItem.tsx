@@ -1,5 +1,5 @@
 import { ListItem, Box, Typography, Chip } from '@mui/material';
-import { Stockpile } from '../objects/Stockpile';
+import { Stockpile } from '../../objects/Stockpile';
 
 interface OrderStockpileListItemProps {
     stockpile: Stockpile;

@@ -15,9 +15,10 @@ import { ArtilleryPage } from './arty/ArtilleryPage'
 import { GPS } from './gps/gps'
 import { StockpilesPage } from './stockpile/StockpilePage'
 import { StockpileViewPage } from './stockpile/view/StockpileViewPage'
-import { SourceSelectionPage } from './orders/SourceSelectionPage'
-import { DestinationSelectionPage } from './orders/DestinationSelectionPage'
+import { SourceSelectionPage } from './orders/selection/SourceSelectionPage'
+import { DestinationSelectionPage } from './orders/selection/DestinationSelectionPage'
 import OrderKanban from './orders/OrderCanbanPage'
+import { OrderStockpileViewPage } from './orders/view/OrderStockpileViewPage'
 
 const drawerWidth = '10vw'
 
@@ -102,6 +103,7 @@ export const Activity = () => {
 					{/* Source / Destination selection pages */}
 					<Route path="/orders/select-source" element={<SourceSelectionPage />} />
 					<Route path="/orders/select-destination" element={<DestinationSelectionPage />} />
+					<Route path="/orders/select-items" element={<OrderStockpileViewPage />} />
 					<Route path="/artillery" element={<ArtilleryPage />} />
 					<Route path="*" element={<StockpilesPage />} />
 				</Routes>

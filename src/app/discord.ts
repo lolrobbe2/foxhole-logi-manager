@@ -27,17 +27,17 @@ class DiscordService {
 
     // Get the authenticated user
     public static getUser() {
-        return DiscordService.context?.session?.user ?? null;
+        return DiscordService.context?.session?.user ?? 'null';
     }
     public static getUserName() {
-        return DiscordService.context?.session?.user.username ?? null;
+        return DiscordService.context?.session?.user.username ?? 'null';
     }
     public static getFullUsername() {
-      return DiscordService.context?.session?.user.global_name ?? null
+      return DiscordService.context?.session?.user.global_name ?? 'null'
     }
     // Get the access token
     public static getAccessToken() {
-        return DiscordService.context?.accessToken ?? null;
+        return DiscordService.context?.accessToken ?? 'null';
     }
 }
 

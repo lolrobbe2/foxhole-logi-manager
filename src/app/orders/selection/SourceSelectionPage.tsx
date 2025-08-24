@@ -1,6 +1,6 @@
     import { useLocation, useNavigate } from 'react-router-dom';
 import { SelectionPage } from './RegionSelectionPage';
-import { Stockpile } from '../objects/Stockpile';
+import { Stockpile } from '../../objects/Stockpile';
 
 export const SourceSelectionPage = () => {
     const location = useLocation();
@@ -10,10 +10,10 @@ export const SourceSelectionPage = () => {
 
     function handleSelect(stockpile: Stockpile) {
         // Update the newOrder object
-        const updatedOrder = { ...newOrder, source: stockpile.name };
+        const updatedOrder = { ...newOrder, source: stockpile.name, sourceStockpile: stockpile };
 
         // Go to destination selection page
-        navigate('/orders/select-destination', { state: { newOrder: updatedOrder } });
+        navigate('/orders/select-destination', { state: { newOrder: updatedOrder} });
     };
 
     return <SelectionPage title="Select Source" onSelect={handleSelect} />;

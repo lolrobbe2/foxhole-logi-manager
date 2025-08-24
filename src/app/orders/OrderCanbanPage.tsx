@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Order, OrderType, ProductionSubtype, TransportSubtype, OrderManager } from '../objects/Orders'
 import OrderDetailsDialog from './OrdersDetailDialog'
 import CreateOrder from './CreateOrder'
+import DiscordService from '../discord'
 
 const colors = {
 	background: '#1b1b1b',
@@ -116,7 +117,7 @@ const OrderKanban: React.FC = () => {
 
 		try {
 			if (newStatus === 'Reserved') {
-				await OrderManager.reserveOrder(draggableId, 'Test')
+				await OrderManager.reserveOrder(draggableId, DiscordService.getFullUsername()!)
 			} else if (newStatus === 'Completed') {
 				await OrderManager.completeOrder(draggableId)
 			}

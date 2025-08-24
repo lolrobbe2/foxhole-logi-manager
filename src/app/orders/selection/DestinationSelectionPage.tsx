@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { SelectionPage } from './RegionSelectionPage'
-import { Stockpile } from '../objects/Stockpile'
+import { Stockpile } from '../../objects/Stockpile'
 
 export const DestinationSelectionPage = () => {
 	const location = useLocation()
@@ -9,7 +9,7 @@ export const DestinationSelectionPage = () => {
 	const { newOrder } = location.state as { newOrder: any }
 
 	const handleSelect = (stockpile: Stockpile) => {
-		const updatedOrder = { ...newOrder, destination: stockpile.name }
+		const updatedOrder = { ...newOrder, destination: stockpile.name,destinationStockpile: stockpile }
 
 		// TODO: Don't create the order yet, we still need to select items
 		// You can pass updatedOrder to the next page for item selection

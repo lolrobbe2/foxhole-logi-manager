@@ -1,5 +1,5 @@
 import { Box, CircularProgress, List, Typography } from '@mui/material';
-import { Stockpile } from '../../app/objects/Stockpile';
+import { Stockpile } from '../../objects/Stockpile';
 import { OrderStockpileListItem } from './OrderStockpileListItem';
 
 interface OrderStockpileListProps {
