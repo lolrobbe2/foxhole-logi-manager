@@ -1,70 +1,76 @@
-import type { SdkSetupResult } from '../hooks/useDiscordSdk';
-import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk';
+import type { SdkSetupResult } from '../hooks/useDiscordSdk'
+import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
 
 class DiscordService {
-    private static discordSdk: DiscordSDK | DiscordSDKMock | null = null;
-    private static context: SdkSetupResult | null = null;
+	private static discordSdk: DiscordSDK | DiscordSDKMock | null = null
+	private static context: SdkSetupResult | null = null
 
-    // Set the Discord SDK instance (call once after context is ready)
-    public static setSdk(sdk: DiscordSDK | DiscordSDKMock): void {
-        DiscordService.discordSdk = sdk;
-    }
+	// Set the Discord SDK instance (call once after context is ready)
+	public static setSdk(sdk: DiscordSDK | DiscordSDKMock): void {
+		DiscordService.discordSdk = sdk
+	}
 
-    // Set the Discord context (contains session, accessToken, etc.)
-    public static setContext(context: SdkSetupResult): void {
-        DiscordService.context = context;
-    }
-    
+	// Set the Discord context (contains session, accessToken, etc.)
+	public static setContext(context: SdkSetupResult): void {
+		DiscordService.context = context
+	}
 
-    // Check if Discord is connected/authenticated
-    public static isConnected(): boolean {
-        return !!(DiscordService.discordSdk && DiscordService.context?.authenticated);
-    }
+	// Check if Discord is connected/authenticated
+	public static isConnected(): boolean {
+		return !!(DiscordService.discordSdk && DiscordService.context?.authenticated)
+	}
 
-    // Optional: get SDK instance
-    public static getSdk(): DiscordSDK | DiscordSDKMock | null {
-        return DiscordService.discordSdk;
-    }
+	// Optional: get SDK instance
+	public static getSdk(): DiscordSDK | DiscordSDKMock | null {
+		return DiscordService.discordSdk
+	}
 
-    // Get the authenticated user
-    public static getUser() {
-        return DiscordService.context?.session?.user ?? 'null';
-    }
-    public static getUserName() {
-        return DiscordService.context?.session?.user.username ?? 'null';
-    }
-    public static getFullUsername() {
-      return DiscordService.context?.session?.user.global_name ?? 'null';
-    }
-    public static getGuildId() {
-        return DiscordService.context?.discordSdk.guildId ?? 'null';
-    }
-    // Get the access token
-    public static getAccessToken() {
-        return DiscordService.context?.accessToken ?? 'null';
-    }
-    public static async getUserRoles(): Promise<string[]> {
-        const endpoint = `/guilds/${this.getGuildId()}/members/${DiscordService.context?.session?.user.id}`
+	// Get the authenticated user
+	public static getUser() {
+		return DiscordService.context?.session?.user ?? 'null'
+	}
+	public static getUserName() {
+		return DiscordService.context?.session?.user.username ?? 'null'
+	}
+	public static getFullUsername() {
+		return DiscordService.context?.session?.user.global_name ?? 'null'
+	}
+	public static getGuildId() {
+		return DiscordService.context?.discordSdk.guildId ?? 'null'
+	}
+	// Get the access token
+	public static getAccessToken() {
+		return DiscordService.context?.accessToken ?? 'null'
+	}
+	public static async getUserRoles(): Promise<string[]> {
+		try {
+			const guildId = this.getGuildId()
+			const userId = DiscordService.context?.session?.user.id
 
-        const response = await fetch(endpoint, {
-            method: 'GET',
-            headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-            'Content-Type': 'application/json',
-            },
-        })
+			if (!guildId || guildId === 'null' || !userId) {
+				throw new Error('Missing guildId or userId')
+			}
 
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Failed to fetch roles: ${errorText}`)
-        }
+			const response = await fetch('/api/users/roles', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ guildId, userId })
+			})
 
-        const data = await response.json()
-        console.log(`data ${data}`);
-        return data.roles ?? []
-        }
+			if (!response.ok) {
+				const error = await response.json()
+				throw new Error(error.error || 'Failed to fetch user roles')
+			}
 
+			const data = await response.json()
+			return data.roles ?? []
+		} catch (err: any) {
+			console.error('Error fetching user roles:', err.message)
+			return []
+		}
+	}
+}
 
-    }
-
-export default DiscordService;
+export default DiscordService
