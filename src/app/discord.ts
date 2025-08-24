@@ -13,7 +13,9 @@ class DiscordService {
     // Set the Discord context (contains session, accessToken, etc.)
     public static setContext(context: SdkSetupResult): void {
         DiscordService.context = context;
+        DiscordService.context.session?.user.
     }
+    
 
     // Check if Discord is connected/authenticated
     public static isConnected(): boolean {
@@ -33,12 +35,36 @@ class DiscordService {
         return DiscordService.context?.session?.user.username ?? 'null';
     }
     public static getFullUsername() {
-      return DiscordService.context?.session?.user.global_name ?? 'null'
+      return DiscordService.context?.session?.user.global_name ?? 'null';
+    }
+    public static getGuildId() {
+        return DiscordService.context?.discordSdk.guildId ?? 'null';
     }
     // Get the access token
     public static getAccessToken() {
         return DiscordService.context?.accessToken ?? 'null';
     }
-}
+    public static async getUserRoles(): Promise<string[]> {
+        const endpoint = `https://discord.com/api/users/@me/guilds/${this.getGuildId(   )}/member`
+
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+            'Content-Type': 'application/json',
+            },
+        })
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(`Failed to fetch roles: ${errorText}`)
+        }
+
+        const data = await response.json()
+        return data.roles ?? []
+        }
+
+
+    }
 
 export default DiscordService;

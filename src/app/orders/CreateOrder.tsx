@@ -13,6 +13,7 @@ import {
 	Typography
 } from '@mui/material'
 import { OrderType, ProductionSubtype, TransportSubtype } from '../objects/Orders'
+import DiscordService from '../discord'
 
 interface CreateOrderProps {
 	open: boolean
@@ -32,7 +33,7 @@ const CreateOrder: React.FC<CreateOrderProps> = ({ open, onClose, defaultType, d
 
 	const handleSaveDraft = () => {
 		const draftOrder = { name, type, subtype, source: '', destination: '' }
-
+    console.log(DiscordService.getUserRoles());
 		// Navigate to source selection page with draftOrder in state
 		if (type === OrderType.Transport) {
 			navigate('/orders/select-source', { state: { newOrder: draftOrder } })
