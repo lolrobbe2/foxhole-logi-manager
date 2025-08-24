@@ -44,7 +44,7 @@ class DiscordService {
         return DiscordService.context?.accessToken ?? 'null';
     }
     public static async getUserRoles(): Promise<string[]> {
-        const endpoint = `/users/@me/guilds/${this.getGuildId()}/member`
+        const endpoint = `/guilds/${this.getGuildId()}/members/${DiscordService.context?.session?.user.id}`
 
         const response = await fetch(endpoint, {
             method: 'GET',
