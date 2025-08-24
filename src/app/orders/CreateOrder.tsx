@@ -31,9 +31,9 @@ const CreateOrder: React.FC<CreateOrderProps> = ({ open, onClose, defaultType, d
 		return defaultType === OrderType.Transport ? TransportSubtype.Hauler : ProductionSubtype.MPF
 	})
 
-	const handleSaveDraft = () => {
+	const handleSaveDraft = async () => {
 		const draftOrder = { name, type, subtype, source: '', destination: '' }
-    console.log(DiscordService.getUserRoles());
+    console.log(await DiscordService.getUserRoles());
 		// Navigate to source selection page with draftOrder in state
 		if (type === OrderType.Transport) {
 			navigate('/orders/select-source', { state: { newOrder: draftOrder } })

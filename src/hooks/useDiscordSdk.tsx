@@ -140,7 +140,7 @@ interface AuthenticateSdkOptions {
  * @returns The result of the Discord SDK `authenticate()` command
  */
 export async function authenticateSdk(options?: AuthenticateSdkOptions) {
-	const { scope = ['identify', 'guilds'] } = options ?? {}
+	const { scope = ['identify','bot', 'guilds','guilds.members.read'] } = options ?? {}
 
 	await discordSdk.ready()
 	const { code } = await discordSdk.commands.authorize({
