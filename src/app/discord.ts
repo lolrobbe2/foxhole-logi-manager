@@ -13,7 +13,6 @@ class DiscordService {
     // Set the Discord context (contains session, accessToken, etc.)
     public static setContext(context: SdkSetupResult): void {
         DiscordService.context = context;
-        DiscordService.context.session?.user.
     }
     
 
