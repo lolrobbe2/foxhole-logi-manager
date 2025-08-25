@@ -4,8 +4,6 @@ type Role = { id: string; name: string }
 class DiscordService {
 	private static discordSdk: DiscordSDK | DiscordSDKMock | null = null
 	private static context: SdkSetupResult | null = null
-	private static rolesCache: Map<string, { roles: Role[]; expires: number }> = new Map()
-	private static cacheTTL = 5 * 60 * 1000 // 5 minutes in ms
 	// Set the Discord SDK instance (call once after context is ready)
 	public static setSdk(sdk: DiscordSDK | DiscordSDKMock): void {
 		DiscordService.discordSdk = sdk
@@ -57,11 +55,7 @@ class DiscordService {
 				throw new Error('Missing guildId or userId')
 			}
 
-			const cacheKey: string = `${guildId}:${userId}`
-			const cached = this.rolesCache.get(cacheKey)
-			if (cached && Date.now() < cached.expires) {
-				return cached.roles
-			}
+		
 
 			const response = await fetch('/api/users/roles', {
 				method: 'POST',
@@ -82,7 +76,6 @@ class DiscordService {
 					}))
 				: []
 
-			this.rolesCache.set(cacheKey, { roles, expires: Date.now() + this.cacheTTL })
 			return roles
 		} catch (err: any) {
 			console.error('Error fetching user roles:', err.message)
