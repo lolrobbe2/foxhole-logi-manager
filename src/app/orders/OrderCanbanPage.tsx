@@ -119,7 +119,7 @@ const OrderKanban: React.FC = () => {
 		// Prevent invalid moves
 		const validMoves: Record<string, string[]> = {
 			Created: ['Reserved'],
-			Reserved: ['Completed'],
+			Reserved: ['Completed','Created'],
 			Completed: [] // locked
 		}
 
