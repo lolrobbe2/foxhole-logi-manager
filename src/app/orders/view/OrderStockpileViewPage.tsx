@@ -220,6 +220,7 @@ export const OrderStockpileViewPage = () => {
 							}
 
 							await OrderManager.createOrder(orderToSend)
+							navigate("/orders");
 						}}
 					>
 						Create Order
