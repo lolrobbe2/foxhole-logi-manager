@@ -48,66 +48,82 @@ export type Order =
 	  }
 
 export class OrderManager {
-    public static async createOrder(order: Omit<Order, 'status' | 'takenBy'> & { createdBy: string }): Promise<void> {
-        const response = await fetch('/api/orders/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(order)
-        })
+	public static async createOrder(order: Omit<Order, 'status' | 'takenBy'> & { createdBy: string }): Promise<void> {
+		const response = await fetch('/api/orders/create', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(order)
+		})
 
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Failed to create order: ${errorText}`)
-        }
-    }
+		if (!response.ok) {
+			const errorText = await response.text()
+			throw new Error(`Failed to create order: ${errorText}`)
+		}
+	}
 
-    public static async reserveOrder(orderName: string, username: string): Promise<Order | null> {
-        const response = await fetch('/api/orders/reserve', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ orderName, username })
-        })
+	public static async reserveOrder(orderName: string, username: string): Promise<Order | null> {
+		const response = await fetch('/api/orders/reserve', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ orderName, username })
+		})
 
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Failed to reserve order: ${errorText}`)
-        }
+		if (!response.ok) {
+			const errorText = await response.text()
+			throw new Error(`Failed to reserve order: ${errorText}`)
+		}
 
-        const result = await response.json()
-        return result.order ?? null
-    }
+		const result = await response.json()
+		return result.order ?? null
+	}
+	public static async unreserveOrder(orderName: string, username: string): Promise<Order | null> {
+		const response = await fetch('/api/orders/reserve', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ orderName, username })
+		})
 
-    public static async completeOrder(orderName: string): Promise<void> {
-        const response = await fetch('/api/orders/completed', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ orderName })
-        })
+		if (!response.ok) {
+			const errorText = await response.text()
+			throw new Error(`Failed to reserve order: ${errorText}`)
+		}
 
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Failed to complete order: ${errorText}`)
-        }
-    }
+		const result = await response.json()
+		return result.order ?? null
+	}
 
-    public static async getOrders(): Promise<Order[]> {
-        const response = await fetch('/api/orders/get', {
-            method: 'GET'
-        })
+	public static async completeOrder(orderName: string): Promise<void> {
+		const response = await fetch('/api/orders/completed', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ orderName })
+		})
 
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Failed to fetch orders: ${errorText}`)
-        }
+		if (!response.ok) {
+			const errorText = await response.text()
+			throw new Error(`Failed to complete order: ${errorText}`)
+		}
+	}
 
-        const result = await response.json()
-        return result.orders ?? []
-    }
+	public static async getOrders(): Promise<Order[]> {
+		const response = await fetch('/api/orders/get', {
+			method: 'GET'
+		})
+
+		if (!response.ok) {
+			const errorText = await response.text()
+			throw new Error(`Failed to fetch orders: ${errorText}`)
+		}
+
+		const result = await response.json()
+		return result.orders ?? []
+	}
 }
-

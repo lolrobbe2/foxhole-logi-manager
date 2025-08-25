@@ -91,7 +91,7 @@ const OrderKanban: React.FC = () => {
 
 	useEffect(() => {
 		async function checkPermissions() {
-			const hasAccess = await DiscordService.allowed(['FH-VOID-Regiment','Stockpile Codes Approved'], false)
+			const hasAccess = await DiscordService.allowed(['FH-VOID-Regiment', 'Stockpile Codes Approved'], false)
 			if (!hasAccess) {
 				navigate('/not-allowed')
 			}
@@ -129,9 +129,11 @@ const OrderKanban: React.FC = () => {
 
 		try {
 			if (newStatus === 'Reserved') {
-				await OrderManager.reserveOrder(draggableId, DiscordService.getFullUsername()!)
+				OrderManager.reserveOrder(draggableId, DiscordService.getFullUsername()!)
 			} else if (newStatus === 'Completed') {
-				await OrderManager.completeOrder(draggableId)
+				OrderManager.completeOrder(draggableId)
+			} else if (newStatus === 'Created') {
+				OrderManager.unreserveOrder(draggableId, DiscordService.getFullUsername()!)
 			}
 
 			// Update UI after API success

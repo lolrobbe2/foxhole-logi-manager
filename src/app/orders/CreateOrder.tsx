@@ -33,7 +33,6 @@ const CreateOrder: React.FC<CreateOrderProps> = ({ open, onClose, defaultType, d
 
 	const handleSaveDraft = async () => {
 		const draftOrder = { name, type, subtype, source: '', destination: '' }
-    console.log(await DiscordService.getUserRoles());
 		// Navigate to source selection page with draftOrder in state
 		if (type === OrderType.Transport) {
 			navigate('/orders/select-source', { state: { newOrder: draftOrder } })
@@ -42,9 +41,7 @@ const CreateOrder: React.FC<CreateOrderProps> = ({ open, onClose, defaultType, d
 		}
 		onClose()
 	}
-	const isFormValid =
-		(name.trim() !== '' &&
-		type !== undefined && subtype !== '')
+	const isFormValid = name.trim() !== '' && type !== undefined && subtype !== ''
 	console.log(subtype)
 	return (
 		<Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">

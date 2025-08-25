@@ -25,7 +25,7 @@ export default async (req: RoboRequest) => {
 		}
 
 		if (req.method === 'DELETE') {
-			await OrderManager.unreserveOrder(orderName)
+			await OrderManager.unreserveOrder(orderName, username)
 			return RoboResponse.json({ success: true, message: `Order "${orderName}" has been unreserved` })
 		}
 
@@ -75,7 +75,7 @@ async function notifyOrderReserved(
 			case TransportSubtype.Train:
 				icon = '🚆'
 				content = `${icon} **${type}** order **${orderName}** has been reserved by **${name}**\n CHOO CHOO!!!`
-                return BotService.sendMessage(channelId, content)
+				return BotService.sendMessage(channelId, content)
 			default:
 				icon = '🚚'
 		}
@@ -83,5 +83,5 @@ async function notifyOrderReserved(
 
 	content = `${icon} **${type}** order **${orderName}** has been reserved by **${name}**`
 
-	return BotService.sendMessage(channelId, content);
+	return BotService.sendMessage(channelId, content)
 }

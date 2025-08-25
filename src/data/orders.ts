@@ -98,7 +98,7 @@ export class OrderManager {
 	 * This function unreserve's an order, resetting its status to 'Created'.
 	 * @param orderName the name of the order to be unreserved
 	 */
-	public static async unreserveOrder(orderName: string): Promise<void> {
+	public static async unreserveOrder(orderName: string, username: string): Promise<void> {
 		const docRef = this.orderCollection.doc(orderName)
 		const order = await docRef.get()
 
@@ -107,7 +107,7 @@ export class OrderManager {
 		}
 
 		// Only unreserve if it's currently reserved
-		if (order.status !== 'Reserved') {
+		if (order.status !== 'Reserved' && order.takenBy !== username) {
 			return
 		}
 
