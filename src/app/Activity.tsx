@@ -24,6 +24,7 @@ import NotAllowed from './default/NotAllowed'
 import HomePage from './default/HomePage'
 import DiscordService from './discord'
 import { FoxBunker, LogiSheet } from './tools/LogiSheet'
+import { CircularProgress } from '@mui/material'
 
 const drawerWidth = '10vw'
 
@@ -84,7 +85,7 @@ const Sidebar = () => {
 }
 
 export const Activity = () => {
-	const { authenticated, discordSdk } = useDiscordSdk()
+	const { authenticated, discordSdk, status } = useDiscordSdk()
 	const [channelName, setChannelName] = useState<string>()
 	const location = useLocation()
 	const [allowed, setAllowed] = useState(false)
@@ -110,35 +111,50 @@ export const Activity = () => {
 
 	const MarginRoutes = ['/gps', '/artillery', '/logi-sheet', '/']
 	const isMarginPage = MarginRoutes.includes(location.pathname)
-
-	return (
-		<Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
-			<CssBaseline />
-			{allowed && <Sidebar />}
+	if (status === 'authenticating') {
+		return (
 			<Box
-				component="main"
 				sx={{
-					flexGrow: 1,
-					bgcolor: colors.background,
-					p: isMarginPage ? 0 : 3,
-					mt: isMarginPage ? 0 : 8
+					height: '100vh',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					backgroundColor: colors.background
 				}}
 			>
-				<Routes>
-					<Route path="/stockpiles" element={<StockpilesPage />} />
-					<Route path="/stockpiles/view" element={<StockpileViewPage />} />
-					<Route path="/orders" element={<OrderKanban />} />
-					{/* Source / Destination selection pages */}
-					<Route path="/orders/select-source" element={<SourceSelectionPage />} />
-					<Route path="/orders/select-destination" element={<DestinationSelectionPage />} />
-					<Route path="/orders/select-items" element={<OrderStockpileViewPage />} />
-					<Route path="/artillery" element={<ArtilleryPage />} />
-					<Route path="/" element={<HomePage />} />
-					<Route path="/not-allowed" element={<NotAllowed />} />
-					<Route path="/logi-sheet" element={<LogiSheet />} />
-					<Route path="*" element={<NotFound />} />
-				</Routes>
+				<CircularProgress color="primary" />
 			</Box>
-		</Box>
-	)
+		)
+	} else {
+		return (
+			<Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
+				<CssBaseline />
+				{allowed && <Sidebar />}
+				<Box
+					component="main"
+					sx={{
+						flexGrow: 1,
+						bgcolor: colors.background,
+						p: isMarginPage ? 0 : 3,
+						mt: isMarginPage ? 0 : 8
+					}}
+				>
+					<Routes>
+						<Route path="/stockpiles" element={<StockpilesPage />} />
+						<Route path="/stockpiles/view" element={<StockpileViewPage />} />
+						<Route path="/orders" element={<OrderKanban />} />
+						{/* Source / Destination selection pages */}
+						<Route path="/orders/select-source" element={<SourceSelectionPage />} />
+						<Route path="/orders/select-destination" element={<DestinationSelectionPage />} />
+						<Route path="/orders/select-items" element={<OrderStockpileViewPage />} />
+						<Route path="/artillery" element={<ArtilleryPage />} />
+						<Route path="/" element={<HomePage />} />
+						<Route path="/not-allowed" element={<NotAllowed />} />
+						<Route path="/logi-sheet" element={<LogiSheet />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</Box>
+			</Box>
+		)
+	}
 }
