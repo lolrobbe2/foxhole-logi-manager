@@ -64,7 +64,7 @@ export class OrderManager {
 		if (existing) {
 			throw new Error(`Order "${order.name}" already exists.`)
 		}
-
+		console.log(order);
 		const newOrder: Order = {
 			...order,
 			items: order.items ?? [],
