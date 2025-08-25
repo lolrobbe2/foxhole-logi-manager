@@ -8,6 +8,7 @@ import { CategoryItemsGrid } from '../../stockpile/view/StockpileGrid'
 import { OrderTransaction } from './OrderTransactionItem'
 import { Order, OrderItem, OrderManager } from '../../objects/Orders'
 import DiscordService from '../../discord'
+import { OrderType } from '~/data/orders'
 
 const categories: CategorySelectorItem[] = [
 	{ name: 'All', image: '/stockpile/categories/IconFilterAll.webp' },
@@ -59,7 +60,7 @@ export const OrderStockpileViewPage = () => {
 		}
 
 		setNewOrder(order as Order)
-		setStockpile(order.destinationStockpile)
+		setStockpile(order.type === OrderType.Production ? order.destinationStockpile : order.sourceStockpile)
 
 		const items = categoryItems[selectedCategory] ?? []
 		const imagePromises = items.map((item) => {
@@ -125,7 +126,55 @@ export const OrderStockpileViewPage = () => {
 		<Box sx={{ bgcolor: colors.background, minHeight: '100vh', display: 'flex' }}>
 			<Box sx={{ flex: 1 }}>
 				{/* Banner */}
-				{/* ... same as before ... */}
+				<Box
+					sx={{
+						ml: '1.5rem',
+						mr: '1.5rem',
+						mb: '2rem',
+						bgcolor: colors.sidebar,
+						borderRadius: '1rem',
+						boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						position: 'relative',
+						textAlign: 'center',
+						minHeight: '4rem'
+					}}
+				>
+					{/* Region & Subregion Chips */}
+					<Box
+						sx={{
+							position: 'absolute',
+							left: '1.5rem',
+							display: 'flex',
+							gap: '0.5rem',
+							flexWrap: 'wrap'
+						}}
+					>
+						<Chip
+							label={Stockpile.getRegion(stockpile)}
+							sx={{
+								bgcolor: colors.accent,
+								color: colors.text,
+								fontWeight: 'bold'
+							}}
+						/>
+						<Chip
+							label={Stockpile.getSubregion(stockpile)}
+							sx={{
+								bgcolor: colors.highlight,
+								color: colors.text,
+								fontWeight: 'bold'
+							}}
+						/>
+					</Box>
+
+					{/* Title */}
+					<Typography variant="h4" sx={{ color: colors.text }}>
+						{Stockpile.getDisplayName(stockpile)}
+					</Typography>
+				</Box>
 
 				{/* Categories */}
 				<CategoriesSelector
@@ -220,7 +269,7 @@ export const OrderStockpileViewPage = () => {
 							}
 
 							await OrderManager.createOrder(orderToSend)
-							navigate("/orders");
+							navigate('/orders')
 						}}
 					>
 						Create Order
