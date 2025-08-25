@@ -23,7 +23,7 @@ import NotFound from './default/NotFound'
 import NotAllowed from './default/NotAllowed'
 import HomePage from './default/HomePage'
 import DiscordService from './discord'
-import { FoxBunker, LogiSheet } from './tools/LogiSheet'
+import { LogiSheet } from './tools/LogiSheet'
 import { CircularProgress } from '@mui/material'
 
 const drawerWidth = '10vw'
@@ -44,10 +44,8 @@ const Orders = () => (
 
 const Sidebar = () => {
 	const [showStockpiles, setShowStockpiles] = useState(false)
-	const [allowed, setAllowed] = useState(false)
 	useEffect(() => {
 		async function checkAccess() {
-			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
 			setShowStockpiles(await DiscordService.allowed(['FH-VOID-Regiment', 'Stockpile Codes Approved'], true))
 		}
 		checkAccess()
@@ -73,12 +71,12 @@ const Sidebar = () => {
 			</Toolbar>
 			<Divider sx={{ backgroundColor: colors.accent }} />
 			<List>
-				{allowed && showStockpiles && (
+				{showStockpiles && (
 					<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
 				)}
-				{allowed && showStockpiles && <SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />}
-				{allowed && <SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />}
-				{allowed && <SidebarLink to="/logi-sheet" label="logi sheet" highlightColor={colors.highlight} />}
+				{showStockpiles && <SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />}
+				{<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />}
+				{<SidebarLink to="/logi-sheet" label="logi sheet" highlightColor={colors.highlight} />}
 			</List>
 		</Drawer>
 	)
@@ -92,7 +90,7 @@ export const Activity = () => {
 
 	useEffect(() => {
 		async function checkAccess() {
-			setAllowed(await DiscordService.allowed([], false))
+			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment','TEST'], false))
 		}
 		checkAccess()
 	}, [])
