@@ -6,9 +6,8 @@ import { Stockpile } from '../../objects/Stockpile'
 import { CategoriesSelector, CategorySelectorItem } from '../../stockpile/view/CategoriesSelector'
 import { CategoryItemsGrid } from '../../stockpile/view/StockpileGrid'
 import { OrderTransaction } from './OrderTransactionItem'
-import { Order, OrderItem, OrderManager } from '../../objects/Orders'
+import { Order, OrderItem, OrderManager, OrderType } from '../../objects/Orders'
 import DiscordService from '../../discord'
-import { OrderType } from '~/data/orders'
 
 const categories: CategorySelectorItem[] = [
 	{ name: 'All', image: '/stockpile/categories/IconFilterAll.webp' },
