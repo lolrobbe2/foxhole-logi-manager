@@ -26,7 +26,7 @@ if (isEmbedded) {
 	const mockGuildId = getOverrideOrRandomSessionValue('guild_id')
 	const mockChannelId = getOverrideOrRandomSessionValue('channel_id')
 
-	discordSdk = new DiscordSDKMock(import.meta.env.VITE_DISCORD_CLIENT_ID, mockGuildId, mockChannelId)
+	discordSdk = new DiscordSDKMock(import.meta.env.VITE_DISCORD_CLIENT_ID, mockGuildId, mockChannelId, null)
 	const discriminator = String(mockUserId.charCodeAt(0) % 5)
 
 	discordSdk._updateCommandMocks({
@@ -140,7 +140,7 @@ interface AuthenticateSdkOptions {
  * @returns The result of the Discord SDK `authenticate()` command
  */
 export async function authenticateSdk(options?: AuthenticateSdkOptions) {
-	const { scope = ['identify','bot', 'guilds','guilds.members.read'] } = options ?? {}
+	const { scope = ['identify', 'bot', 'guilds', 'guilds.members.read'] } = options ?? {}
 
 	await discordSdk.ready()
 	const { code } = await discordSdk.commands.authorize({

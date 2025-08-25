@@ -4,7 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const LOGI_SHEET_URL_URL =
     process.env.NODE_ENV === "production"
-        ? "/logisheet"
+        ? "/logisheet/FoxholeLogiSheet/"
         : "https://defiesm1.github.io/FoxholeLogiSheet/facility";
 
 export const LogiSheet = () => {
