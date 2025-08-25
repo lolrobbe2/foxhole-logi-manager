@@ -23,7 +23,7 @@ import NotFound from './default/NotFound'
 import NotAllowed from './default/NotAllowed'
 import HomePage from './default/HomePage'
 import DiscordService from './discord'
-import { FoxBunker } from './tools/FoxBunker'
+import { FoxBunker, LogiSheet } from './tools/LogiSheet'
 
 const drawerWidth = '10vw'
 
@@ -76,8 +76,8 @@ const Sidebar = () => {
 					<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
 				)}
 				{allowed && showStockpiles && <SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />}
-				<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />
-				<SidebarLink to="/fox-bunker" label="foxbunker" highlightColor={colors.highlight} />
+				{allowed && <SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />}
+				{allowed && <SidebarLink to="/logi-sheet" label="logi sheet" highlightColor={colors.highlight} />}
 			</List>
 		</Drawer>
 	)
@@ -87,6 +87,14 @@ export const Activity = () => {
 	const { authenticated, discordSdk } = useDiscordSdk()
 	const [channelName, setChannelName] = useState<string>()
 	const location = useLocation()
+	const [allowed, setAllowed] = useState(false)
+
+	useEffect(() => {
+		async function checkAccess() {
+			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
+		}
+		checkAccess()
+	}, [])
 
 	useEffect(() => {
 		if (!authenticated || !discordSdk.channelId || !discordSdk.guildId) {
@@ -100,13 +108,13 @@ export const Activity = () => {
 		})
 	}, [authenticated, discordSdk])
 
-	const MarginRoutes = ['/gps', '/artillery','/fox-bunker', '/'];
-	const isMarginPage = MarginRoutes.includes(location.pathname);
+	const MarginRoutes = ['/gps', '/artillery', '/logi-sheet', '/']
+	const isMarginPage = MarginRoutes.includes(location.pathname)
 
 	return (
 		<Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
 			<CssBaseline />
-			<Sidebar />
+			{allowed && <Sidebar />}
 			<Box
 				component="main"
 				sx={{
@@ -127,7 +135,7 @@ export const Activity = () => {
 					<Route path="/artillery" element={<ArtilleryPage />} />
 					<Route path="/" element={<HomePage />} />
 					<Route path="/not-allowed" element={<NotAllowed />} />
-					<Route path="/fox-bunker" element={<FoxBunker />} />
+					<Route path="/logi-sheet" element={<LogiSheet />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Box>

@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const FOXBUNKER_URL =
+const LOGI_SHEET_URL_URL =
     process.env.NODE_ENV === "production"
-        ? "/bunker"
-        : "https://foxbunker.com/";
+        ? "/logisheet"
+        : "https://defiesm1.github.io/FoxholeLogiSheet/facility";
 
-export const FoxBunker = () => {
+export const LogiSheet = () => {
     const [loading, setLoading] = useState(true);
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -45,8 +45,8 @@ export const FoxBunker = () => {
 
             <iframe
                 ref={iframeRef}
-                src={FOXBUNKER_URL}
-                title="FoxBunker GPS"
+                src={LOGI_SHEET_URL_URL}
+                title="LOGI_SHEET_URL GPS"
                 style={{
                     width: "100%",
                     height: "100%",

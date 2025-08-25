@@ -98,6 +98,8 @@ class DiscordService {
 	 */
 	public static async allowed(requiredRoles: string[], requireAll: boolean = false): Promise<boolean> {
 		try {
+			//dev
+			//return true;
 			const roles: Role[] = await this.getUserRoles()
 			if (requiredRoles.length === 0) {
 				return true
