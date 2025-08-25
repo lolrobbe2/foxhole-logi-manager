@@ -128,6 +128,7 @@ const OrderKanban: React.FC = () => {
 			console.error('Failed to update order:', err)
 		}
 	}
+	const isEmpty = filteredOrders.filter((order) => order.status === status).length === 0
 
 	return (
 		<Box p={3} sx={{ backgroundColor: colors.background, minHeight: '100vh', color: colors.text }}>
@@ -196,95 +197,99 @@ const OrderKanban: React.FC = () => {
 
 			{/* DragDrop Kanban */}
 			<DragDropContext onDragEnd={onDragEnd}>
-				<Grid container spacing={3} sx={{ display: 'flex', flexGrow: 1 }}>
-					{statusColumns.map((status) => (
-						<Grid key={status} item xs sx={{ display: 'flex' }}>
-							<Box
-								sx={{
-									flexGrow: 1,
-									backgroundColor:
-										status === 'Created'
-											? '#8b0000' // dark red
-											: status === 'Reserved'
-												? '#f4a261' // foxhole orange
-												: colors.sidebar,
-									border: status === 'Completed' ? '2px solid #4caf50' : 'none',
-									borderRadius: 2,
-									p: 2,
-									minHeight: '80vh',
-									width: '25vw'
-								}}
-							>
-								<Typography variant="h6" gutterBottom sx={{ color: colors.accent, textAlign: 'center' }}>
-									{status}
-								</Typography>
+				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
+					<Grid container spacing={3} sx={{ maxWidth: '90vw' }}>
+						{statusColumns.map((status) => (
+							<Grid key={status} item xs sx={{ display: 'flex' }}>
+								<Box
+									sx={{
+										flexGrow: 1,
+										backgroundColor: isEmpty ? 'transparent' : colors.sidebar,
+										border:
+											status === 'Created'
+												? '2px solid #8b0000'
+												: status === 'Reserved'
+													? '2px solid #f4a261'
+													: status === 'Completed'
+														? '2px solid #4caf50'
+														: 'none',
+										borderRadius: 2,
+										p: 2,
+										minHeight: '80vh',
+										width: '25vw'
+									}}
+								>
+									<Typography variant="h6" gutterBottom sx={{ color: colors.accent, textAlign: 'center' }}>
+										{status}
+									</Typography>
 
-								<Droppable droppableId={status}>
-									{(provided) => (
-										<div ref={provided.innerRef} {...provided.droppableProps}>
-											{filteredOrders
-												.filter((order) => order.status === status)
-												.map((order, index) => (
-													<Draggable key={order.name} draggableId={order.name} index={index}>
-														{(provided) => (
-															<Card
-																ref={provided.innerRef}
-																{...provided.draggableProps}
-																{...provided.dragHandleProps}
-																onClick={() => setSelectedOrder(order)}
-																sx={{
-																	mb: 2,
-																	backgroundColor: colors.highlight,
-																	borderRadius: 2,
-																	boxShadow: 3,
-																	cursor: 'pointer'
-																}}
-															>
-																<CardContent>
-																	<Stack direction="row" alignItems="center" spacing={1}>
-																		{subtypeIcons[order.subtype]}
-																		<Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: colors.text }}>
-																			{order.name}
+									<Droppable droppableId={status}>
+										{(provided) => (
+											<div ref={provided.innerRef} {...provided.droppableProps}>
+												{filteredOrders
+													.filter((order) => order.status === status)
+													.map((order, index) => (
+														<Draggable key={order.name} draggableId={order.name} index={index}>
+															{(provided) => (
+																<Card
+																	ref={provided.innerRef}
+																	{...provided.draggableProps}
+																	{...provided.dragHandleProps}
+																	onClick={() => setSelectedOrder(order)}
+																	sx={{
+																		mb: 2,
+																		backgroundColor: colors.highlight,
+																		borderRadius: 2,
+																		boxShadow: 3,
+																		cursor: 'pointer'
+																	}}
+																>
+																	<CardContent>
+																		<Stack direction="row" alignItems="center" spacing={1}>
+																			{subtypeIcons[order.subtype]}
+																			<Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: colors.text }}>
+																				{order.name}
+																			</Typography>
+																		</Stack>
+
+																		<Box sx={{ mt: 1 }}>
+																			<Chip
+																				label={order.type}
+																				size="small"
+																				sx={{
+																					mr: 1,
+																					backgroundColor: colors.accent,
+																					color: colors.background,
+																					fontWeight: 'bold'
+																				}}
+																			/>
+																			<Chip
+																				label={order.subtype}
+																				size="small"
+																				icon={subtypeIcons[order.subtype]}
+																				sx={{ backgroundColor: colors.accent, color: colors.background }}
+																			/>
+																		</Box>
+
+																		<Typography variant="caption" sx={{ color: colors.text, display: 'block', mt: 1 }}>
+																			{order.type === OrderType.Production
+																				? `To: ${order.destination.split('_')[0]}`
+																				: `From: ${order.source.split('_')[0]} → ${order.destination.split('_')[0]}`}
 																		</Typography>
-																	</Stack>
-
-																	<Box sx={{ mt: 1 }}>
-																		<Chip
-																			label={order.type}
-																			size="small"
-																			sx={{
-																				mr: 1,
-																				backgroundColor: colors.accent,
-																				color: colors.background,
-																				fontWeight: 'bold'
-																			}}
-																		/>
-																		<Chip
-																			label={order.subtype}
-																			size="small"
-																			icon={subtypeIcons[order.subtype]}
-																			sx={{ backgroundColor: colors.accent, color: colors.background }}
-																		/>
-																	</Box>
-
-																	<Typography variant="caption" sx={{ color: colors.text, display: 'block', mt: 1 }}>
-																		{order.type === OrderType.Production
-																			? `To: ${order.destination.split('_')[0]}`
-																			: `From: ${order.source.split('_')[0]} → ${order.destination.split('_')[0]}`}
-																	</Typography>
-																</CardContent>
-															</Card>
-														)}
-													</Draggable>
-												))}
-											{provided.placeholder}
-										</div>
-									)}
-								</Droppable>
-							</Box>
-						</Grid>
-					))}
-				</Grid>
+																	</CardContent>
+																</Card>
+															)}
+														</Draggable>
+													))}
+												{provided.placeholder}
+											</div>
+										)}
+									</Droppable>
+								</Box>
+							</Grid>
+						))}
+					</Grid>
+				</Box>
 			</DragDropContext>
 
 			{/* Popup for details */}

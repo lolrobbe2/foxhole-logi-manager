@@ -1,5 +1,5 @@
-import { client } from "robo.js"
-import FoxholeApi from "../data/foxhole/api"
+import { client } from 'robo.js'
+import FoxholeApi from '../data/foxhole/api'
 
 /**
  * This is an example API route for GET /api/hello
@@ -12,6 +12,5 @@ import FoxholeApi from "../data/foxhole/api"
  * https://robojs.dev/plugins/server
  */
 export default async () => {
-	
 	return 'hello'
 }
