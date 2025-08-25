@@ -19,6 +19,11 @@ import { SourceSelectionPage } from './orders/selection/SourceSelectionPage'
 import { DestinationSelectionPage } from './orders/selection/DestinationSelectionPage'
 import OrderKanban from './orders/OrderCanbanPage'
 import { OrderStockpileViewPage } from './orders/view/OrderStockpileViewPage'
+import NotFound from './default/NotFound'
+import NotAllowed from './default/NotAllowed'
+import HomePage from './default/HomePage'
+import DiscordService from './discord'
+import { FoxBunker } from './tools/FoxBunker'
 
 const drawerWidth = '10vw'
 
@@ -36,33 +41,47 @@ const Orders = () => (
 	</Typography>
 )
 
-const Sidebar = () => (
-	<Drawer
-		variant="permanent"
-		sx={{
-			width: drawerWidth,
-			flexShrink: 0,
-			[`& .MuiDrawer-paper`]: {
+const Sidebar = () => {
+	const [showStockpiles, setShowStockpiles] = useState(false)
+	const [allowed, setAllowed] = useState(false)
+	useEffect(() => {
+		async function checkAccess() {
+			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
+			setShowStockpiles(await DiscordService.allowed(['FH-VOID-Regiment', 'Stockpile Codes Approved'], true))
+		}
+		checkAccess()
+	}, [])
+	return (
+		<Drawer
+			variant="permanent"
+			sx={{
 				width: drawerWidth,
-				boxSizing: 'border-box',
-				backgroundColor: colors.sidebar,
-				color: colors.text
-			}
-		}}
-	>
-		<Toolbar>
-			<Typography variant="h6" noWrap sx={{ color: colors.accent }}>
-				Menu
-			</Typography>
-		</Toolbar>
-		<Divider sx={{ backgroundColor: colors.accent }} />
-		<List>
-			<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
-			<SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />
-			<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />
-		</List>
-	</Drawer>
-)
+				flexShrink: 0,
+				[`& .MuiDrawer-paper`]: {
+					width: drawerWidth,
+					boxSizing: 'border-box',
+					backgroundColor: colors.sidebar,
+					color: colors.text
+				}
+			}}
+		>
+			<Toolbar>
+				<Typography variant="h6" noWrap sx={{ color: colors.accent }}>
+					Menu
+				</Typography>
+			</Toolbar>
+			<Divider sx={{ backgroundColor: colors.accent }} />
+			<List>
+				{allowed && showStockpiles && (
+					<SidebarLink to="/stockpiles" label="Stockpiles" highlightColor={colors.highlight} />
+				)}
+				{allowed && showStockpiles && <SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />}
+				<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />
+				<SidebarLink to="/fox-bunker" label="foxbunker" highlightColor={colors.highlight} />
+			</List>
+		</Drawer>
+	)
+}
 
 export const Activity = () => {
 	const { authenticated, discordSdk } = useDiscordSdk()
@@ -81,7 +100,8 @@ export const Activity = () => {
 		})
 	}, [authenticated, discordSdk])
 
-	const isGpsPage = location.pathname === '/gps' || location.pathname === '/artillery'
+	const MarginRoutes = ['/gps', '/artillery','/fox-bunker', '/'];
+	const isMarginPage = MarginRoutes.includes(location.pathname);
 
 	return (
 		<Box sx={{ display: 'flex', height: '100vh', backgroundColor: colors.background }}>
@@ -92,8 +112,8 @@ export const Activity = () => {
 				sx={{
 					flexGrow: 1,
 					bgcolor: colors.background,
-					p: isGpsPage ? 0 : 3,
-					mt: isGpsPage ? 0 : 8
+					p: isMarginPage ? 0 : 3,
+					mt: isMarginPage ? 0 : 8
 				}}
 			>
 				<Routes>
@@ -105,7 +125,10 @@ export const Activity = () => {
 					<Route path="/orders/select-destination" element={<DestinationSelectionPage />} />
 					<Route path="/orders/select-items" element={<OrderStockpileViewPage />} />
 					<Route path="/artillery" element={<ArtilleryPage />} />
-					<Route path="*" element={<StockpilesPage />} />
+					<Route path="/" element={<HomePage />} />
+					<Route path="/not-allowed" element={<NotAllowed />} />
+					<Route path="/fox-bunker" element={<FoxBunker />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Box>
 		</Box>

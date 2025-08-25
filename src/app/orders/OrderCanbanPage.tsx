@@ -6,6 +6,7 @@ import { Order, OrderType, ProductionSubtype, TransportSubtype, OrderManager } f
 import OrderDetailsDialog from './OrdersDetailDialog'
 import CreateOrder from './CreateOrder'
 import DiscordService from '../discord'
+import { useNavigate } from 'react-router-dom'
 
 const colors = {
 	background: '#1b1b1b',
@@ -86,6 +87,17 @@ const OrderKanban: React.FC = () => {
 	const [subtypeFilter, setSubtypeFilter] = useState<string | 'All'>('All')
 	const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 	const [createOpen, setCreateOpen] = useState(false)
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		async function checkPermissions() {
+			const hasAccess = await DiscordService.allowed(['FH-VOID-Regiment','Stockpile Codes Approved'], false)
+			if (!hasAccess) {
+				navigate('/not-allowed')
+			}
+		}
+		checkPermissions()
+	}, [])
 
 	useEffect(() => {
 		OrderManager.getOrders().then(setOrders).catch(console.error)
