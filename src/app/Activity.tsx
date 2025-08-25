@@ -92,7 +92,7 @@ export const Activity = () => {
 
 	useEffect(() => {
 		async function checkAccess() {
-			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
+			setAllowed(await DiscordService.allowed([], false))
 		}
 		checkAccess()
 	}, [])
