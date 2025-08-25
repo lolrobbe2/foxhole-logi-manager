@@ -136,12 +136,7 @@ const OrderKanban: React.FC = () => {
 			</Typography>
 
 			{/* Create Order button */}
-			<Button
-				variant="contained"
-				color="primary"
-				onClick={() => setCreateOpen(true)}
-				sx={{ mb: 2 }}
-			>
+			<Button variant="contained" color="primary" onClick={() => setCreateOpen(true)} sx={{ mb: 2 }}>
 				➕ Create Order
 			</Button>
 
@@ -207,7 +202,13 @@ const OrderKanban: React.FC = () => {
 							<Box
 								sx={{
 									flexGrow: 1,
-									backgroundColor: colors.sidebar,
+									backgroundColor:
+										status === 'Created'
+											? '#8b0000' // dark red
+											: status === 'Reserved'
+												? '#f4a261' // foxhole orange
+												: colors.sidebar,
+									border: status === 'Completed' ? '2px solid #4caf50' : 'none',
 									borderRadius: 2,
 									p: 2,
 									minHeight: '80vh',

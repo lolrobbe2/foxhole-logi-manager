@@ -1,4 +1,5 @@
 import { RoboRequest, RoboResponse } from '@robojs/server'
+import { Options, Snowflake } from 'discord.js'
 import { client } from 'robo.js'
 
 export default async (req: RoboRequest) => {
@@ -19,8 +20,7 @@ export default async (req: RoboRequest) => {
         if (!guild) {
             return RoboResponse.json({ error: 'Guild not found' }, { status: 404 })
         }
-
-        const member = await guild.members.fetch(userId)
+        const member = await guild.members.fetch(userId as Snowflake)
         if (!member) {
             return RoboResponse.json({ error: 'Member not found' }, { status: 404 })
         }
