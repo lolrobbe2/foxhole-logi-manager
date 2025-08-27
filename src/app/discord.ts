@@ -55,8 +55,6 @@ class DiscordService {
 				throw new Error('Missing guildId or userId')
 			}
 
-		
-
 			const response = await fetch('/api/users/roles', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -92,7 +90,7 @@ class DiscordService {
 	public static async allowed(requiredRoles: string[], requireAll: boolean = false): Promise<boolean> {
 		try {
 			//dev
-			//return true;
+			//return true
 			const roles: Role[] = await this.getUserRoles()
 			if (requiredRoles.length === 0) {
 				return true
@@ -116,6 +114,48 @@ class DiscordService {
 		} catch (err: any) {
 			console.error('Error checking roles:', err.message)
 			return false
+		}
+	}
+
+	static async getAllUserRoles(guildId: string): Promise<Record<string, string[]>> {
+		const response = await fetch('/api/users/allroles', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ guildId })
+		})
+
+		const data = await response.json()
+		if (!response.ok) {
+			throw new Error(data.error || 'Failed to fetch roles')
+		}
+
+		return data.rolesByUser
+	}
+
+	public static async updateRole(
+		roleName: string,
+		action: 'add' | 'remove'
+	): Promise<{ success: boolean; message?: string; error?: string }> {
+		try {
+			const guildId: string = this.getGuildId();
+			const userId: string = this.getUserName();
+			const response = await fetch('/api/users/userrole', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({guildId , userId, roleName, action })
+			})
+
+			const data = await response.json()
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Unknown error')
+			}
+
+			return data
+		} catch (err: any) {
+			return { success: false, error: err.message }
 		}
 	}
 }

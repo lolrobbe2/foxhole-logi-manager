@@ -25,6 +25,7 @@ import HomePage from './default/HomePage'
 import DiscordService from './discord'
 import { LogiSheet } from './tools/LogiSheet'
 import { CircularProgress } from '@mui/material'
+import RoleSelection from './roles/RoleSelection'
 
 const drawerWidth = '10vw'
 
@@ -77,6 +78,7 @@ const Sidebar = () => {
 				{showStockpiles && <SidebarLink to="/orders" label="Orders" highlightColor={colors.highlight} />}
 				{<SidebarLink to="/artillery" label="Artillery" highlightColor={colors.highlight} />}
 				{<SidebarLink to="/logi-sheet" label="logi sheet" highlightColor={colors.highlight} />}
+				{<SidebarLink to="/roles-selection" label="roles" highlightColor={colors.highlight} />}
 			</List>
 		</Drawer>
 	)
@@ -90,7 +92,7 @@ export const Activity = () => {
 
 	useEffect(() => {
 		async function checkAccess() {
-			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment','TEST'], false))
+			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
 		}
 		checkAccess()
 	}, [])
@@ -149,6 +151,7 @@ export const Activity = () => {
 						<Route path="/" element={<HomePage />} />
 						<Route path="/not-allowed" element={<NotAllowed />} />
 						<Route path="/logi-sheet" element={<LogiSheet />} />
+						<Route path="/roles-selection" element={<RoleSelection />}/>
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</Box>
