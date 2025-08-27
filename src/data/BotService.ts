@@ -14,7 +14,7 @@ class BotService {
 		}
 
 		this.client = new Client({
-			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages,GatewayIntentBits.GuildMembers]
 		})
 
 		this.client.login(token).catch((err) => console.error('Bot login failed:', err))
