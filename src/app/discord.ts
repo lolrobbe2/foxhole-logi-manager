@@ -50,7 +50,7 @@ class DiscordService {
 		try {
 			const guildId: string | null = this.getGuildId()
 			const userId: string | undefined = DiscordService.context?.session?.user.id
-			
+
 			if (!guildId || guildId === 'null' || !userId) {
 				console.error('Missing guildId or userId', { guildId, userId })
 				return []
@@ -140,10 +140,13 @@ class DiscordService {
 		try {
 			data = await response.json()
 		} catch {
+			console.error('Invalid server response')
 			return { success: false, error: 'Invalid server response' }
 		}
 
 		if (!response.ok) {
+			console.error(data?.error)
+
 			return { success: false, error: data?.error || 'Failed to fetch roles' }
 		}
 
