@@ -15,7 +15,7 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 
 	const handleRoleToggle = async (roleName: string, active: boolean) => {
 		try {
-			const result = await DiscordService.updateRole(roleName, active ? 'add' : 'remove')
+			const result = await DiscordService.updateRole(roleName, active ? 'remove' : 'add')
 			if (!result.success) {
 				console.log('Failed to update role:', result.error)
 			}
