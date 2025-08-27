@@ -37,6 +37,7 @@ export default async (req: RoboRequest) => {
 
     return RoboResponse.json({ rolesByUser })
   } catch (err: any) {
+    console.error(err.message)
     return RoboResponse.json({ error: err.message || 'Unknown error' }, { status: 500 })
   }
 }
