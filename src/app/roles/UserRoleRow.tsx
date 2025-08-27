@@ -14,18 +14,29 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 	const [roles, setRoles] = useState<Role[]>(userRoles)
 
 	const handleRoleToggle = async (roleName: string, active: boolean) => {
+		setRoles(
+			(prevRoles) =>
+				active
+					? prevRoles.filter((r) => r.name !== roleName) // remove
+					: [...prevRoles, { id: roleName, name: roleName }] // add
+		)
+
+		// Fire the API call in the background
 		try {
 			const result = await DiscordService.updateRole(roleName, active ? 'remove' : 'add')
 			if (!result.success) {
 				console.log('Failed to update role:', result.error)
 			}
+
+			// Always refresh local state from server after API response
+			const updatedRoles: Role[] = await DiscordService.getUserRoles()
+			setRoles(updatedRoles)
 		} catch (err: any) {
 			console.log('Error updating role:', err?.message || err)
+			// Refresh from server on error
+			const updatedRoles: Role[] = await DiscordService.getUserRoles()
+			setRoles(updatedRoles)
 		}
-
-		// Update local state immediately
-		console.log()
-		setRoles(await DiscordService.getUserRoles())
 	}
 
 	return (
