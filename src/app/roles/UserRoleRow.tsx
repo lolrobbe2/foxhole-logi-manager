@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import RoleButton from './RoleButton'
+import DiscordService from '../discord'
 
 type Role = { id: string; name: string }
 
@@ -13,13 +14,19 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 	const [roles, setRoles] = useState<Role[]>(userRoles)
 
 	const handleRoleToggle = (roleName: string, active: boolean) => {
+		// Fire-and-forget API call
+		DiscordService.updateRole(roleName, active ? 'add' : 'remove')
+			.then((result) => {
+				if (!result.success) {
+					console.log('Failed to update role:', result.error)
+				}
+			})
+			.catch((err) => console.log('Error updating role:', err))
+
+		// Update local state immediately
 		setRoles((prevRoles) =>
-			active
-				? [...prevRoles, { id: roleName, name: roleName }]
-				: prevRoles.filter((r) => r.name !== roleName)
+			active ? [...prevRoles, { id: roleName, name: roleName }] : prevRoles.filter((r) => r.name !== roleName)
 		)
-		// Example: you can call your DiscordService here
-		// DiscordService.updateRole(roleName, active ? "add" : "remove");
 	}
 
 	return (
