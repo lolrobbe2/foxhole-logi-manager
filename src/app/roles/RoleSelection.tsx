@@ -3,6 +3,8 @@ import DiscordService from '../discord'
 import { Box, Typography, CircularProgress, Container } from '@mui/material'
 import UserRoleRow from './UserRoleRow'
 import RoleGroup from './RoleGroups'
+type Role = { id: string; name: string }
+
 
 const STATIC_ROLES: { name: string; description: string }[] = [
 	{
@@ -86,6 +88,7 @@ const STATIC_ROLES: { name: string; description: string }[] = [
 
 const RoleSelection: React.FC = () => {
 	const [rolesByUser, setRolesByUser] = useState<Record<string, string[]>>({})
+	const [userRoles, setUserRoles] = useState<Role[]>([])
 	const [loading, setLoading] = useState(true)
 
 	// Mock current user for now
@@ -95,13 +98,13 @@ const RoleSelection: React.FC = () => {
 		const fetchRoles = async () => {
 			try {
 				const guildId = DiscordService.getGuildId()
-				if (!guildId || guildId === 'null') throw new Error('Guild ID not available')
-
-				const roles = await DiscordService.getAllUserRoles(guildId)
-				console.log(roles);
-				setRolesByUser(roles.rolesByUser!)
+				setUserRoles(await DiscordService.getUserRoles())
+				//const roles = await DiscordService.getAllUserRoles(guildId)
+				//console.log(roles);
+				//setRolesByUser(roles.rolesByUser!)
 			} catch {
 				setRolesByUser({})
+				setUserRoles([])
 			} finally {
 				setLoading(false)
 			}
@@ -119,7 +122,6 @@ const RoleSelection: React.FC = () => {
 		})
 	})
 
-	const currentUserRoles = rolesByUser[currentUsername] || []
 
 	return (
 		<Container maxWidth="lg" sx={{ py: 4 }}>
@@ -135,7 +137,7 @@ const RoleSelection: React.FC = () => {
 				<>
 					{/* Personal Role Selection */}
 					<Box sx={{ mb: 4 }}>
-						<UserRoleRow username={currentUsername} userRoles={currentUserRoles} staticRoles={STATIC_ROLES} />
+						<UserRoleRow username={currentUsername} userRoles={userRoles} staticRoles={STATIC_ROLES} />
 					</Box>
 
 					{/* Role Groups Overview */}

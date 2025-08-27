@@ -1,18 +1,25 @@
 import React, { useState } from 'react'
 import RoleButton from './RoleButton'
 
+type Role = { id: string; name: string }
+
 interface UserRoleRowProps {
 	username: string
-	userRoles: string[]
+	userRoles: Role[]
 	staticRoles: { name: string; description: string }[]
 }
 
 const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRoles }) => {
-	const [roles, setRoles] = useState<string[]>(userRoles)
+	const [roles, setRoles] = useState<Role[]>(userRoles)
 
-	const handleRoleToggle = (role: string, active: boolean) => {
-        //DiscordService.updateRole()
-		setRoles((prevRoles) => (active ? [...prevRoles, role] : prevRoles.filter((r) => r !== role)))
+	const handleRoleToggle = (roleName: string, active: boolean) => {
+		setRoles((prevRoles) =>
+			active
+				? [...prevRoles, { id: roleName, name: roleName }]
+				: prevRoles.filter((r) => r.name !== roleName)
+		)
+		// Example: you can call your DiscordService here
+		// DiscordService.updateRole(roleName, active ? "add" : "remove");
 	}
 
 	return (
@@ -35,15 +42,19 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 					justifyContent: 'center'
 				}}
 			>
-				{staticRoles.map(({ name, description }) => (
-					<RoleButton
-						key={name}
-						role={name}
-						active={roles.includes(name)}
-						description={description}
-						onClick={(active) => handleRoleToggle(name, active)}
-					/>
-				))}
+				{staticRoles.map(({ name, description }) => {
+					const isActive = roles.some((r) => r.name === name)
+
+					return (
+						<RoleButton
+							key={name}
+							role={name}
+							active={isActive}
+							description={description}
+							onClick={(active) => handleRoleToggle(name, active)}
+						/>
+					)
+				})}
 			</div>
 		</li>
 	)
