@@ -159,7 +159,7 @@ class DiscordService {
 	): Promise<{ success: boolean; message?: string; error?: string }> {
 		try {
 			const guildId: string = this.getGuildId()
-			const userId: string = this.getUserName()
+			const userId: string = this.context?.session?.user.id!;
 
 			const response = await fetch('/api/users/userrole', {
 				method: 'PATCH',
