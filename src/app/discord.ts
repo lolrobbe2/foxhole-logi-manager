@@ -159,13 +159,16 @@ class DiscordService {
 	): Promise<{ success: boolean; message?: string; error?: string }> {
 		try {
 			const guildId: string = this.getGuildId()
-			const userId: string = this.context?.session?.user.id!;
+			const userId: string | undefined = this.context?.session?.user.id
+
+			if (!guildId || !userId) {
+				console.log('Missing guildId or userId', { guildId, userId })
+				return { success: false, error: 'Missing guildId or userId' }
+			}
 
 			const response = await fetch('/api/users/userrole', {
 				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ guildId, userId, roleName, action })
 			})
 
@@ -173,15 +176,18 @@ class DiscordService {
 			try {
 				data = await response.json()
 			} catch {
+				console.log('Invalid server response while updating role')
 				return { success: false, error: 'Invalid server response' }
 			}
 
 			if (!response.ok) {
+				console.log('Failed to update role:', data?.error)
 				return { success: false, error: data?.error || 'Unknown error' }
 			}
 
 			return data
 		} catch (err: any) {
+			console.log('Error updating role:', err)
 			return { success: false, error: err?.message || 'Unexpected error' }
 		}
 	}

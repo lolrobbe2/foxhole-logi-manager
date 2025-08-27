@@ -1,7 +1,21 @@
 import { RoboRequest, RoboResponse } from '@robojs/server'
 import { client } from 'robo.js'
 
-const STATIC_ROLES = ['Admin', 'Moderator', 'Logistics', 'Support', 'Developer']
+const STATIC_ROLES: string[] = [
+	'Infantry Division',
+	'Front Line Engineer',
+	'Forward Operating Base Team',
+	'Front Line Logistics',
+	'Back Line Logistics',
+	'Armoured Division',
+	'Mechanised Infantry (Light Armour)',
+	'Recon Division (Partisan)',
+	'Artillery Division',
+	'Naval Division',
+	'Base Builder Team',
+	'Base Maintenance',
+	'Medical Division'
+]
 
 export default async (req: RoboRequest) => {
   try {
@@ -37,7 +51,7 @@ export default async (req: RoboRequest) => {
 
     return RoboResponse.json({ rolesByUser })
   } catch (err: any) {
-    console.error(err.message)
+    console.error(err)
     return RoboResponse.json({ error: err.message || 'Unknown error' }, { status: 500 })
   }
 }

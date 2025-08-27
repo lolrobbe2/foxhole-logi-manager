@@ -99,9 +99,6 @@ const RoleSelection: React.FC = () => {
 			try {
 				const guildId = DiscordService.getGuildId()
 				setUserRoles(await DiscordService.getUserRoles())
-				//const roles = await DiscordService.getAllUserRoles(guildId)
-				//console.log(roles);
-				//setRolesByUser(roles.rolesByUser!)
 			} catch {
 				setRolesByUser({})
 				setUserRoles([])
