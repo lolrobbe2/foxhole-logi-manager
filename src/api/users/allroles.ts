@@ -2,19 +2,19 @@ import { RoboRequest, RoboResponse } from '@robojs/server'
 import { client } from 'robo.js'
 
 const STATIC_ROLES: string[] = [
-	'Infantry Division',
-	'Front Line Engineer',
-	'Forward Operating Base Team',
-	'Front Line Logistics',
-	'Back Line Logistics',
-	'Armoured Division',
-	'Mechanised Infantry (Light Armour)',
-	'Recon Division (Partisan)',
-	'Artillery Division',
-	'Naval Division',
-	'Base Builder Team',
-	'Base Maintenance',
-	'Medical Division'
+  'Infantry Division',
+  'Front Line Engineer',
+  'Forward Operating Base Team',
+  'Front Line Logistics',
+  'Back Line Logistics',
+  'Armoured Division',
+  'Mechanised Infantry (Light Armour)',
+  'Recon Division (Partisan)',
+  'Artillery Division',
+  'Naval Division',
+  'Base Builder Team',
+  'Base Maintenance',
+  'Medical Division'
 ]
 
 export default async (req: RoboRequest) => {
@@ -35,10 +35,12 @@ export default async (req: RoboRequest) => {
       return RoboResponse.json({ error: 'Guild not found' }, { status: 404 })
     }
 
-    const members = await guild.members.fetch()
+    // fetch *only* cached members (fast, avoids hanging)
+    await guild.members.fetch()
+
     const rolesByUser: Record<string, string[]> = {}
 
-    members.forEach(member => {
+    guild.members.cache.forEach(member => {
       const username = member.user.username
       const filteredRoles = member.roles.cache
         .map(role => role.name)
@@ -51,7 +53,7 @@ export default async (req: RoboRequest) => {
 
     return RoboResponse.json({ rolesByUser })
   } catch (err: any) {
-    console.error(err)
+    console.error('Error in /allroles:', err)
     return RoboResponse.json({ error: err.message || 'Unknown error' }, { status: 500 })
   }
 }
