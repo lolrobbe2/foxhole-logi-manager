@@ -98,6 +98,7 @@ const RoleSelection: React.FC = () => {
 				if (!guildId || guildId === 'null') throw new Error('Guild ID not available')
 
 				const roles = await DiscordService.getAllUserRoles(guildId)
+				console.log(roles);
 				setRolesByUser(roles.rolesByUser!)
 			} catch {
 				setRolesByUser({})
