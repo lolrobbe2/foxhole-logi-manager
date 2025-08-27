@@ -19,7 +19,7 @@ const RoleButton: React.FC<RoleButtonProps> = ({ role, active, description, onCl
 	const handleClick = () => {
 		onClick(active) // let parent handle re-render with new state
 	}
-
+	console.log(`role: ${role}, active: ${active}`)
 	return (
 		<button
 			onClick={handleClick}
