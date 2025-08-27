@@ -12,7 +12,7 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 	const [roles, setRoles] = useState<string[]>(userRoles)
 
 	const handleRoleToggle = (role: string, active: boolean) => {
-        DiscordService.updateRole()
+        //DiscordService.updateRole()
 		setRoles((prevRoles) => (active ? [...prevRoles, role] : prevRoles.filter((r) => r !== role)))
 	}
 
