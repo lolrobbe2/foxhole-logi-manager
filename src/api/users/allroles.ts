@@ -35,12 +35,12 @@ export default async (req: RoboRequest) => {
       return RoboResponse.json({ error: 'Guild not found' }, { status: 404 })
     }
 
-    const members = await guild.members.list()
+    const members = await guild.members.list({cache: false})
 
     const rolesByUser: Record<string, string[]> = {}
-
+    console.log(members);
     members.forEach(member => {
-      console.log(member);
+      
       const username = member.user.username
       const filteredRoles = member.roles.cache
         .map(role => role.name)
