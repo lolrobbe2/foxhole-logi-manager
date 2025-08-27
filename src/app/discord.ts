@@ -117,19 +117,27 @@ class DiscordService {
 		}
 	}
 
-	static async getAllUserRoles(guildId: string): Promise<Record<string, string[]>> {
+	public static async getAllUserRoles(
+		guildId: string
+	): Promise<{ success: boolean; rolesByUser?: Record<string, string[]>; error?: string }> {
 		const response = await fetch('/api/users/allroles', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ guildId })
 		})
 
-		const data = await response.json()
-		if (!response.ok) {
-			throw new Error(data.error || 'Failed to fetch roles')
+		let data: any
+		try {
+			data = await response.json()
+		} catch {
+			return { success: false, error: 'Invalid server response' }
 		}
 
-		return data.rolesByUser
+		if (!response.ok) {
+			return { success: false, error: data?.error || 'Failed to fetch roles' }
+		}
+
+		return { success: true, rolesByUser: data.rolesByUser }
 	}
 
 	public static async updateRole(
@@ -137,25 +145,31 @@ class DiscordService {
 		action: 'add' | 'remove'
 	): Promise<{ success: boolean; message?: string; error?: string }> {
 		try {
-			const guildId: string = this.getGuildId();
-			const userId: string = this.getUserName();
+			const guildId: string = this.getGuildId()
+			const userId: string = this.getUserName()
+
 			const response = await fetch('/api/users/userrole', {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({guildId , userId, roleName, action })
+				body: JSON.stringify({ guildId, userId, roleName, action })
 			})
 
-			const data = await response.json()
+			let data: any
+			try {
+				data = await response.json()
+			} catch {
+				return { success: false, error: 'Invalid server response' }
+			}
 
 			if (!response.ok) {
-				throw new Error(data.error || 'Unknown error')
+				return { success: false, error: data?.error || 'Unknown error' }
 			}
 
 			return data
 		} catch (err: any) {
-			return { success: false, error: err.message }
+			return { success: false, error: err?.message || 'Unexpected error' }
 		}
 	}
 }
