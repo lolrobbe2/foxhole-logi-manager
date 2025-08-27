@@ -24,6 +24,7 @@ const UserRoleRow: React.FC<UserRoleRowProps> = ({ username, userRoles, staticRo
 		}
 
 		// Update local state immediately
+		console.log()
 		setRoles(await DiscordService.getUserRoles())
 	}
 

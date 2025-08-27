@@ -23,7 +23,7 @@ export default async (req: RoboRequest) => {
             return RoboResponse.json({ error: 'Guild not found' }, { status: 404 });
         }
 
-        const member = await guild.members.fetch(userId as Snowflake);
+        const member = await guild.members.fetch({ user: userId as Snowflake, force: true });
         if (!member) {
             return RoboResponse.json({ error: 'Member not found' }, { status: 404 });
         }
