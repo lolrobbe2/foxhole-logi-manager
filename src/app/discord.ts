@@ -50,9 +50,10 @@ class DiscordService {
 		try {
 			const guildId: string | null = this.getGuildId()
 			const userId: string | undefined = DiscordService.context?.session?.user.id
-
+			
 			if (!guildId || guildId === 'null' || !userId) {
-				throw new Error('Missing guildId or userId')
+				console.error('Missing guildId or userId', { guildId, userId })
+				return []
 			}
 
 			const response = await fetch('/api/users/roles', {
@@ -62,11 +63,19 @@ class DiscordService {
 			})
 
 			if (!response.ok) {
-				const error = await response.json()
-				throw new Error(error.error || 'Failed to fetch user roles')
+				let error: any
+				try {
+					error = await response.json()
+				} catch {
+					console.error('Failed to parse error response')
+					return []
+				}
+				console.error('Failed to fetch user roles:', error?.error || 'Unknown error')
+				return []
 			}
 
 			const data = (await response.json()) as { roles?: Array<{ id: string; name: string }> }
+
 			const roles: Role[] = Array.isArray(data.roles)
 				? data.roles.map((r) => ({
 						id: String(r.id),
@@ -74,9 +83,10 @@ class DiscordService {
 					}))
 				: []
 
+			console.log('Fetched user roles:', roles)
 			return roles
 		} catch (err: any) {
-			console.error('Error fetching user roles:', err.message)
+			console.error('Error fetching user roles:', err?.message || err)
 			return []
 		}
 	}

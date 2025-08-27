@@ -37,12 +37,6 @@ const colors = {
 	text: '#e0e0d1'
 }
 
-const Orders = () => (
-	<Typography variant="body1" sx={{ color: colors.text }}>
-		Showing Orders content here...
-	</Typography>
-)
-
 const Sidebar = () => {
 	const [showStockpiles, setShowStockpiles] = useState(false)
 	useEffect(() => {
