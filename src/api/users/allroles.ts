@@ -35,7 +35,7 @@ export default async (req: RoboRequest) => {
       return RoboResponse.json({ error: 'Guild not found' }, { status: 404 })
     }
 
-    const members = await guild.members.fetch()
+    const members = await guild.members.list()
 
     const rolesByUser: Record<string, string[]> = {}
 
