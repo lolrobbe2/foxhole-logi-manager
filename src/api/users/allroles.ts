@@ -44,8 +44,6 @@ export default async (req: RoboRequest) => {
       const username = member.user.username
       const filteredRoles = member.roles.cache
         .map(role => role.name)
-        .filter(name => STATIC_ROLES.includes(name))
-
       if (filteredRoles.length > 0) {
         rolesByUser[username] = filteredRoles
       }
