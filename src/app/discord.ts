@@ -127,30 +127,38 @@ class DiscordService {
 		}
 	}
 
-	public static async getAllUserRoles(
-		guildId: string
-	): Promise<{ success: boolean; rolesByUser?: Record<string, string[]>; error?: string }> {
-		const response = await fetch('/api/users/allroles', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ guildId })
-		})
+	public static async getAllUserRoles(): Promise<{ rolesByUser: Record<string, string[]> }> {
+		const guildId: string | null = this.getGuildId()
+		if (!guildId) {
+			console.error('Missing guildId')
+			return { rolesByUser: {} }
+		}
 
-		let data: any
 		try {
-			data = await response.json()
-		} catch {
-			console.error('Invalid server response')
-			return { success: false, error: 'Invalid server response' }
+			const response = await fetch('/api/users/allroles', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ guildId })
+			})
+
+			let data: any
+			try {
+				data = await response.json()
+			} catch {
+				console.error('Invalid server response')
+				return { rolesByUser: {} }
+			}
+
+			if (!response.ok) {
+				console.error(data?.error || 'Failed to fetch roles')
+				return { rolesByUser: {} }
+			}
+
+			return { rolesByUser: data.rolesByUser || {} }
+		} catch (err: any) {
+			console.error('Error fetching all user roles:', err?.message || err)
+			return { rolesByUser: {} }
 		}
-
-		if (!response.ok) {
-			console.error(data?.error)
-
-			return { success: false, error: data?.error || 'Failed to fetch roles' }
-		}
-
-		return { success: true, rolesByUser: data.rolesByUser }
 	}
 
 	public static async updateRole(
