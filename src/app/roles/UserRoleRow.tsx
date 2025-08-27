@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import RoleButton from './RoleButton'
-import DiscordService from '../discord'
 
 interface UserRoleRowProps {
 	username: string

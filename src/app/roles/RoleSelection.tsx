@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import DiscordService from '../discord'
 import { Box, Typography, Paper, List, ListItem, ListItemText, CircularProgress, Container } from '@mui/material'
 import UserRoleRow from './UserRoleRow'
 import RoleGroup from './RoleGroups'
@@ -89,16 +88,19 @@ const RoleSelection: React.FC = () => {
 	const [loading, setLoading] = useState(true)
 
 	// Mock current user for now
-	const currentUsername = DiscordService.getUserName() || 'You'
+	const currentUsername =  'You'
 
 	useEffect(() => {
 		const fetchRoles = async () => {
 			try {
+                /*
 				const guildId = DiscordService.getGuildId()
 				if (!guildId || guildId === 'null') throw new Error('Guild ID not available')
 
 				const roles = await DiscordService.getAllUserRoles(guildId)
 				setRolesByUser(roles)
+                */
+               setRolesByUser({})
 			} catch {
 				setRolesByUser({})
 			} finally {
