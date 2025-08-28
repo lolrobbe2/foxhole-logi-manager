@@ -46,7 +46,7 @@ export default async (req: RoboRequest) => {
 			roles: member.roles.cache.map((r) => ({ id: r.id, name: r.name }))
 		})
 	} catch (err: any) {
-		console.error(err)
+		console.log(err)
 		return RoboResponse.json({ error: err.message || 'Unknown error' }, { status: 500 })
 	}
 }
