@@ -1,5 +1,5 @@
-import type { SdkSetupResult } from '../hooks/useDiscordSdk'
-import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
+import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk';
+import type { SdkSetupResult } from '../hooks/useDiscordSdk';
 type Role = { id: string; name: string }
 class DiscordService {
 	private static discordSdk: DiscordSDK | DiscordSDKMock | null = null
@@ -48,13 +48,8 @@ class DiscordService {
 	 */
 	public static async getUserRoles(): Promise<Role[]> {
 		try {
-			const guildId: string | null = this.getGuildId()
+			const guildId: string | undefined | null = DiscordService.context?.discordSdk.guildId 
 			const userId: string | undefined = DiscordService.context?.session?.user.id
-
-			if (!guildId || guildId === 'null' || !userId) {
-				console.error('Missing guildId or userId', { guildId, userId })
-				return []
-			}
 
 			const response = await fetch('/api/users/roles', {
 				method: 'POST',

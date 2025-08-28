@@ -1,6 +1,6 @@
 import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
-import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import DiscordService from '../app/discord'
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
@@ -113,16 +113,36 @@ interface DiscordContextProviderProps {
 }
 export function DiscordContextProvider(props: DiscordContextProviderProps) {
 	const { authenticate, children, loadingScreen = null, scope } = props
-	const setupResult = useDiscordSdkSetup({ authenticate, scope })
+	const [setupResult, setSetupResult] = useState<ReturnType<typeof useDiscordSdkSetup> | null>(null)
 
-	if (loadingScreen && !['error', 'ready'].includes(setupResult.status)) {
+	useEffect(() => {
+		let isMounted = true
+
+		async function initialize() {
+			const result = await useDiscordSdkSetup({ authenticate, scope })
+			if (isMounted) {
+				setSetupResult(result)
+				if (result.status === 'ready') {
+					DiscordService.setSdk(discordSdk)
+					DiscordService.setContext(result)
+				}
+			}
+		}
+
+		initialize()
+
+		return () => {
+			isMounted = false
+		}
+	}, [authenticate, scope])
+
+	if (!setupResult || !['error', 'ready'].includes(setupResult.status)) {
 		return <>{loadingScreen}</>
 	}
-	DiscordService.setSdk(discordSdk)
-	DiscordService.setContext(setupResult)
 
 	return <DiscordContext.Provider value={setupResult}>{children}</DiscordContext.Provider>
 }
+
 
 export function useDiscordSdk() {
 	return useContext(DiscordContext)

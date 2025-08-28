@@ -15,7 +15,7 @@ export default async (req: RoboRequest) => {
         const body = await req.json()
         const guildId = body.guildId as string
         const userId = body.userId as string
-
+        
         if (!guildId || !userId) {
             return RoboResponse.json({ error: 'Missing guildId or userId' }, { status: 400 })
         }
