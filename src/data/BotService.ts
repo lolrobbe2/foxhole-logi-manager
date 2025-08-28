@@ -1,8 +1,6 @@
 import { TextChannel } from 'discord.js'
 import { client } from 'robo.js'
 class BotService {
-
-
 	public static async sendMessage(channelName: string, content: string) {
 		if (!client) throw new Error('Bot client not initialized')
 
