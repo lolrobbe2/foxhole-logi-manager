@@ -10,22 +10,21 @@ import List from '@mui/material/List'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
+import { CircularProgress } from '@mui/material'
 import { SidebarLink } from './SidebarNav'
 import { ArtilleryPage } from './arty/ArtilleryPage'
-import { GPS } from './gps/gps'
+import HomePage from './default/HomePage'
+import NotAllowed from './default/NotAllowed'
+import NotFound from './default/NotFound'
+import DiscordService from './discord'
+import OrderKanban from './orders/OrderCanbanPage'
+import { DestinationSelectionPage } from './orders/selection/DestinationSelectionPage'
+import { SourceSelectionPage } from './orders/selection/SourceSelectionPage'
+import { OrderStockpileViewPage } from './orders/view/OrderStockpileViewPage'
+import RoleSelection from './roles/RoleSelection'
 import { StockpilesPage } from './stockpile/StockpilePage'
 import { StockpileViewPage } from './stockpile/view/StockpileViewPage'
-import { SourceSelectionPage } from './orders/selection/SourceSelectionPage'
-import { DestinationSelectionPage } from './orders/selection/DestinationSelectionPage'
-import OrderKanban from './orders/OrderCanbanPage'
-import { OrderStockpileViewPage } from './orders/view/OrderStockpileViewPage'
-import NotFound from './default/NotFound'
-import NotAllowed from './default/NotAllowed'
-import HomePage from './default/HomePage'
-import  DiscordService from './discord'
 import { LogiSheet } from './tools/LogiSheet'
-import { CircularProgress } from '@mui/material'
-import RoleSelection from './roles/RoleSelection'
 
 const drawerWidth = '10vw'
 
@@ -84,12 +83,19 @@ export const Activity = () => {
 	const location = useLocation()
 	const [allowed, setAllowed] = useState(false)
 
+	// Only run the access check if authenticated
 	useEffect(() => {
+		if (!authenticated) {
+			setAllowed(false)
+			return
+		}
+
 		async function checkAccess() {
-			setAllowed(await DiscordService.allowed(['FH-VOID-Regiment'], false))
+			const result = await DiscordService.allowed(['FH-VOID-Regiment'], false)
+			setAllowed(result)
 		}
 		checkAccess()
-	}, [])
+	}, [authenticated])
 
 	useEffect(() => {
 		if (!authenticated || !discordSdk.channelId || !discordSdk.guildId) {
@@ -145,7 +151,7 @@ export const Activity = () => {
 						<Route path="/" element={<HomePage />} />
 						<Route path="/not-allowed" element={<NotAllowed />} />
 						<Route path="/logi-sheet" element={<LogiSheet />} />
-						<Route path="/roles-selection" element={<RoleSelection />}/>
+						<Route path="/roles-selection" element={<RoleSelection />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</Box>
