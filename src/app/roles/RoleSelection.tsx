@@ -1,8 +1,8 @@
+import { Box, CircularProgress, Container, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import DiscordService from '../discord'
-import { Box, Typography, CircularProgress, Container } from '@mui/material'
-import UserRoleRow from './UserRoleRow'
 import RoleGroup from './RoleGroups'
+import UserRoleRow from './UserRoleRow'
 type Role = { id: string; name: string }
 
 
@@ -99,7 +99,7 @@ const RoleSelection: React.FC = () => {
 			try {
 				const guildId = DiscordService.getGuildId()
 				setUserRoles(await DiscordService.getUserRoles())
-				setRolesByUser((await DiscordService.getAllUserRoles()).rolesByUser);
+				//setRolesByUser((await DiscordService.getAllUserRoles()).rolesByUser);
 			} catch {
 				setRolesByUser({})
 				setUserRoles([])
@@ -136,13 +136,6 @@ const RoleSelection: React.FC = () => {
 					{/* Personal Role Selection */}
 					<Box sx={{ mb: 4 }}>
 						<UserRoleRow username={currentUsername} userRoles={userRoles} staticRoles={STATIC_ROLES} />
-					</Box>
-
-					{/* Role Groups Overview */}
-					<Box display="flex" flexWrap="wrap" justifyContent="center" gap={3}>
-						{STATIC_ROLES.map(({ name, description }) => (
-							<RoleGroup key={name} role={name} description={description} users={roleGroups[name] || []} />
-						))}
 					</Box>
 				</>
 			)}
