@@ -118,18 +118,16 @@ export function DiscordContextProvider(props: DiscordContextProviderProps) {
 	useEffect(() => {
 		let isMounted = true
 
-		async function initialize() {
-			const result = await useDiscordSdkSetup({ authenticate, scope })
-			if (isMounted) {
-				setSetupResult(result)
-				if (result.status === 'ready') {
-					DiscordService.setSdk(discordSdk)
-					DiscordService.setContext(result)
+			; (async () => {
+				const result = await useDiscordSdkSetup({ authenticate, scope })
+				if (isMounted) {
+					setSetupResult(result)
+					if (result.status === 'ready') {
+						DiscordService.setSdk(result.discordSdk) // <-- use the sdk from result
+						DiscordService.setContext(result)
+					}
 				}
-			}
-		}
-
-		initialize()
+			})()
 
 		return () => {
 			isMounted = false
@@ -142,6 +140,7 @@ export function DiscordContextProvider(props: DiscordContextProviderProps) {
 
 	return <DiscordContext.Provider value={setupResult}>{children}</DiscordContext.Provider>
 }
+
 
 
 export function useDiscordSdk() {
